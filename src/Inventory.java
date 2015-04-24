@@ -50,8 +50,8 @@ public class Inventory{
 		inventoryDisplay = new InventoryDisplay();
 		inventoryDisplay.setBorder(BorderFactory.createLineBorder(Color.white));
 		mainContainer.add(inventoryDisplay);
-		info = new Combat.DetailedInfo();
-		sidebar.add(info);
+		//info = new Main.combat.DetailedInfo();
+		//sidebar.add(info);
 		charInv = new InvPanel();
 		sidebar.add(charInv);
 	}
@@ -68,7 +68,7 @@ public class Inventory{
 			
 		}
 		inventoryDisplay.setup();
-		setupChar();
+		//setupChar();
 	}
 	
 	private static void setupChar(){
@@ -170,7 +170,7 @@ public class Inventory{
 			 */
 			private static final long serialVersionUID = 1L;
 			private String src = null;
-			private static String borderDefault = Main.loadImage("/ItemTiles/ItemBorder20");
+			private static String borderDefault = "/ItemTiles/ItemBorder20";
 			private static int size;
 			public boolean isSelected = false;
 			public boolean isHover = false;
@@ -178,12 +178,12 @@ public class Inventory{
 			public void paintComponent(Graphics g){
 				super.paintComponent(g);
 				if(isSelected){
-					g.drawImage(Main.images.get(borderDefault), 0, 0, this);//TODO
+					g.drawImage(Main.loadImage(borderDefault), 0, 0, this);//TODO
 				}else{
-					g.drawImage(Main.images.get(borderDefault), 0, 0, this);
+					g.drawImage(Main.loadImage(borderDefault), 0, 0, this);
 				}
 				if(src != null){
-					g.drawImage(Main.images.get(src), 0, 0, 20, 20, this);
+					g.drawImage(Main.loadImage(src), 0, 0, 20, 20, this);
 				}
 				if(isHover){
 					g.setColor(Color.green);

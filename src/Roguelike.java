@@ -51,7 +51,7 @@ public class Roguelike{
 	
 	private static tilePanel mainBoard;
 	
-	private static JLabel sidebar;
+	//private static JLabel sidebar;
 	
 	public static boolean noClip = false;
 	
@@ -65,13 +65,13 @@ public class Roguelike{
 			mainBoard = new tilePanel();
 			Main.roguelike.add(mainBoard);
 		}
-		if(sidebar == null){
+		/*if(sidebar == null){
 			sidebar = new JLabel();
 			sidebar.setBackground(Color.BLACK);
 			sidebar.setText("ERROR");
 		//	sidebar.setBorder(BorderFactory.createLineBorder(Color.WHITE));
 			Main.roguelike.add(sidebar);
-		}
+		}*/
 		Main.parent.add(Main.roguelike, Main.ROGUELIKE);
 		CardLayout cl = (CardLayout)(Main.parent.getLayout());
 		cl.next(Main.parent);
@@ -626,6 +626,7 @@ class tilePanel extends JPanel{
 	
 	@Override
 	protected void paintComponent(Graphics g) {
+		((Graphics2D) g).scale(Main.scale,Main.scale);
         super.paintComponent(g);
         if(!(Main.player != null && Roguelike.viewPort != null)){
         	return;
@@ -738,6 +739,6 @@ class tilePanel extends JPanel{
 	}
 	
 	public Dimension getPreferredSize() {
-        return new Dimension(((Roguelike.viewPort.size.width*2)+1)*Roguelike.tileSize.width,((Roguelike.viewPort.size.height*2)+1)*Roguelike.tileSize.width);
+        return new Dimension(((int) ((Roguelike.viewPort.size.width*2)+1)*Roguelike.tileSize.width*Main.scale),((int) ((Roguelike.viewPort.size.height*2)+1)*Roguelike.tileSize.width*Main.scale));
     }
 }

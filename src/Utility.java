@@ -1,4 +1,5 @@
 import java.awt.FontMetrics;
+import java.awt.Graphics;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -41,6 +42,24 @@ public class Utility{
 	        }
 	    }
 	   return highest;
+	}
+	
+	public static void drawString(Graphics g, String text, int x, int y) {
+	    for (String line : text.split("\n"))
+	        g.drawString(line, x, y += g.getFontMetrics().getHeight());
+	}
+	public static void drawString(Graphics g, String text, int x, int y, int w) {
+		List<String> paragraphs = new ArrayList<String>();
+		for (String line : text.split("\n")){
+	        paragraphs.add(line);
+		}
+		List<String> newParagraphs = new ArrayList<String>();
+		for(String str : paragraphs){
+			List<String> wrap = Utility.StringUtils.wrap(str, g.getFontMetrics(g.getFont()), w);
+			newParagraphs.addAll(wrap);
+		}
+		for (String line : newParagraphs)
+	        g.drawString(line, x, y += g.getFontMetrics().getHeight());
 	}
 
 	/**

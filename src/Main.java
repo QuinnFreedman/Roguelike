@@ -6,10 +6,13 @@ import java.awt.CardLayout;
 import java.awt.Color;
 import java.awt.FlowLayout;
 import java.awt.Font;
+import java.awt.GraphicsEnvironment;
+import java.awt.Image;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.IOException;
 
 import javax.imageio.ImageIO;
@@ -29,9 +32,12 @@ public class Main extends JFrame implements KeyListener
 	public static JPanel parent;
 	
 	public static JPanel roguelike;	
-	public static JPanel combat;
-	public static JPanel menu;
+	public static Combat combat;
+	public static Menu menu;
 	public static JPanel inv;
+	
+	public static int scale = 2;
+	public static boolean isLoading = true;
 	
 	public static Font font = new Font("Courier New", Font.PLAIN, 12);
 	
@@ -53,19 +59,30 @@ public class Main extends JFrame implements KeyListener
 		Debug.startTime = System.nanoTime();
 		Debug.lastTime = Debug.startTime;
 		
+		try {
+			GraphicsEnvironment ge = 
+		    	GraphicsEnvironment.getLocalGraphicsEnvironment();
+			Font newFont = Font.createFont(Font.TRUETYPE_FONT, new File("assets\\font\\pixelated.ttf"));
+			ge.registerFont(newFont);
+			font = newFont.deriveFont(14f);
+		} catch (Exception e) {
+		     //Handle exception
+			e.printStackTrace();
+		}
 		new Main();
 		
 		Console.benchmark();
 		
 		init();
 		
+		isLoading = false;
 	}
 	
 	//**********GUI Constructor***********
 	public Main()
-	{
+	{		
 		window = new JFrame();
-		window.setSize(555,325);//440,320
+		window.setSize(555*scale,325*scale);//440,320
 		window.setLocationRelativeTo(null);
 		//window.setResizable(false);
 		window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -77,13 +94,12 @@ public class Main extends JFrame implements KeyListener
 		parent = new JPanel(new CardLayout());
 		window.add(parent);
 		
-		combat = new JPanel();
+		combat = new Combat();
 		parent.add(combat, COMBAT);
-		new Combat();
 		
-		menu = new JPanel();
+		menu = new Menu();
 		parent.add(menu, MENU);
-		new Menu();
+		
 		
 		roguelike = new JPanel();
 		new Roguelike();
@@ -112,7 +128,7 @@ public class Main extends JFrame implements KeyListener
 		
 	}
 	
-	public static String loadImage(String srcIndex){
+	public static Image loadImage(String srcIndex){
 		if(Main.images.get(srcIndex) == null){
 			Console.log("Loading "+srcIndex+".png");
 			BufferedImage src = null;
@@ -123,9 +139,10 @@ public class Main extends JFrame implements KeyListener
 				e.printStackTrace();
 			}
 			Main.images.put(srcIndex,src);
-			return srcIndex;
+			return src;
+		}else{
+			return images.get(srcIndex);
 		}
-		return null;
 	}
 	
 	@Override
@@ -151,7 +168,7 @@ public class Main extends JFrame implements KeyListener
 		}else if(currentlyDisplayed == COMBAT){
 			Combat.handleKeyInput(c);
 		}else if(currentlyDisplayed == MENU){
-			Menu.handleKeyInput(c);
+			menu.handleKeyInput(c);
 		}else if(currentlyDisplayed == INV){
 			Inventory.handleKeyInput(c);
 		}
