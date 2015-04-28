@@ -166,6 +166,8 @@ public class Main extends JFrame implements KeyListener
 	
 	@Override
 	public void keyPressed(KeyEvent e) {
+		if(isLoading)
+			return;
 		int c = e.getKeyCode ();
 		if(c==192) {               
 	 		new Input();

@@ -147,6 +147,8 @@ public class Debug extends JFrame implements KeyListener{
 	}
 	@Override
 	public void keyPressed(KeyEvent e){
+		if(Main.isLoading)
+			return;
 		int c = e.getKeyCode ();
      	if(c==KeyEvent.VK_LEFT) {
    	 		if(index > 1){
@@ -157,15 +159,20 @@ public class Debug extends JFrame implements KeyListener{
    	 		if(index < images.size()-1){
 	 			index++;
 	 			Display.repaint();
+	 		}else{
+	 			index = 1;
+	 			Display.repaint();
 	 		}
         }else if(c==KeyEvent.VK_SPACE){                
-   	 		Main.init();
+        	Main.isLoading = true;
+        	Main.init();
 	   	 	if(index < images.size()-1){
 	 			index++;
 	 			Display.repaint();
 	 		}
+        	Main.isLoading = false;
         }else if(c == KeyEvent.VK_A){
-        	finish();
+        	end();
         }else if(c == KeyEvent.VK_END){
         	end();
         }else if(c == KeyEvent.VK_HOME){

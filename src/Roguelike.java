@@ -167,6 +167,8 @@ public class Roguelike{
 		//render
 		render();
 		Console.benchmark();
+
+		Main.debug.finish();
 		
 		Console.log(0,"init - done");
 	}
@@ -604,8 +606,10 @@ public class Roguelike{
    	 	} else if(c==KeyEvent.VK_RIGHT) {                
    	 		move(Main.player, 2);
    	 		gameloop();
-        } else if(c==KeyEvent.VK_SPACE) {                
+        } else if(c==KeyEvent.VK_SPACE) {
+        	Main.isLoading = true;
         	Main.init();
+        	Main.isLoading = false;
         } else if(c==KeyEvent.VK_S) {                
         	gameloop();
 	    } else if(c==KeyEvent.VK_ENTER) {                
@@ -663,7 +667,7 @@ class tilePanel extends JPanel{
 						this);
 
 				if(isFog){
-					((Graphics2D) g).setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1));
+					((Graphics2D) g).setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.3f));
 					g.drawImage(fog,
 							x*Roguelike.tileSize.width, 
 							y*Roguelike.tileSize.height,
