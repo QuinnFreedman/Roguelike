@@ -1,18 +1,13 @@
-import java.awt.CardLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.imageio.ImageIO;
 import javax.swing.BorderFactory;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -43,7 +38,7 @@ public class Debug extends JFrame implements KeyListener{
 	}
 	private void createAndShowGUI() {
 		window = new JFrame();
-		window.setSize(600,400);
+		window.setSize((int) (600*Main.scale),(int) (400*Main.scale));
 		window.addKeyListener(this);
 		//window.setLocationRelativeTo(null);
 		window.setDefaultCloseOperation(EXIT_ON_CLOSE);
@@ -56,13 +51,14 @@ public class Debug extends JFrame implements KeyListener{
 		window.add(parent);
 		
 		draw = new debugPanel();
-		draw.setSize(Roguelike.map.width*scale+20,Roguelike.map.height*scale+20);
+		draw.setSize((int) (Roguelike.map.width*scale+20*Main.scale),(int) (Roguelike.map.height*scale+20*Main.scale));
 		draw.setVisible(false);
 		parent.add(draw);
 		
 		Display = new debugDisplay();
 		Display.setBorder(BorderFactory.createLineBorder(Color.black));
 		parent.add(Display);
+		window.pack();
 	}
 	public void update(){
 		if(debugOn){
@@ -203,7 +199,7 @@ class debugPanel extends JPanel{
 	@Override
 	protected void paintComponent(Graphics g) {
         super.paintComponent(g);
-        
+        //((Graphics2D) g).scale(Main.scale,Main.scale);
         g.setColor(Color.lightGray);
         for(int x = 0; x < Roguelike.map.width; x++){
         	g.drawLine(x*scale, 0, x*scale, Roguelike.map.height*scale);
@@ -295,7 +291,8 @@ class debugDisplay extends JPanel{
 	
 	@Override
 	protected void paintComponent(Graphics g) {
-        if(Debug.index > 0){
+		((Graphics2D) g).scale(Main.scale,Main.scale);
+    	if(Debug.index > 0){
         	g.drawImage(Debug.images.get(Debug.index),0,0,this);
         	g.drawString("seed = "+Integer.toString(Main.seed), 1, 11);
         	g.drawString("frame "+Integer.toString(Debug.index)+"/"+Integer.toString(Debug.images.size()-1), 1, 22);
@@ -307,7 +304,7 @@ class debugDisplay extends JPanel{
 	}
 	@Override
 	public Dimension getPreferredSize() {
-		return new Dimension(Roguelike.map.width*Debug.scale,Roguelike.map.height*Debug.scale);
+		return new Dimension((int) (Roguelike.map.width*Debug.scale*Main.scale),(int) (Roguelike.map.height*Debug.scale*Main.scale));
 		//return new Dimension(484,324);
     }
 }

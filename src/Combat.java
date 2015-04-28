@@ -211,7 +211,7 @@ public class Combat extends JPanel{
 		g.setFont(Main.font);
 		g.drawRect(5, 5, 140, 270);
 		about.paint(g,5,5);
-		Utility.drawString(g, menuText, 10, 170);
+		Utility.drawString(g, menuText, 10, 190);
 	//center
 		g.drawRect(150, 5, 220, 270);
 		for(int x = 0; x < 2; x++){
@@ -228,7 +228,7 @@ public class Combat extends JPanel{
 		}
 	//right sidebar
 		g.drawRect(375, 5, 180, 250);
-		Utility.drawString(g, log, 380, 10, 250);
+		Utility.drawString(g, log, 380, 5, 170);
 	}
 	
 	private static void takeTurn(){
@@ -679,7 +679,7 @@ public class Combat extends JPanel{
 							+ "Armor: "+c.armor+"\n"
 							+ "Magic Resitance: "+c.magicResist+"\n"
 							+ "Damage: "+c.damage+"\n"
-							+ ((c.magicDamage != 0) ? "Magic Damage : "+c.magicDamage : "\n\n");
+							+ ((c.magicDamage != 0) ? "Magic Damage : "+c.magicDamage : "\n \n");
 				}
 				
 			}

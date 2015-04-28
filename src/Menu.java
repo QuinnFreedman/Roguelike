@@ -6,6 +6,7 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.Image;
 import java.awt.RenderingHints;
 import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
@@ -30,6 +31,8 @@ public class Menu extends JPanel{
 	static String output2 = "";
 	static String image = null;
 	
+	private static Image backgroundImage;
+	
 	private static void getMenuText() {
 		output = "";
 		output2 = "";
@@ -50,8 +53,6 @@ public class Menu extends JPanel{
 			}
 			output2 += Charecter.parseClas(Charecter.classes[currentPos]).getInfo();//TODO, make parse return static, not instantiated
 			image = "characterTiles\\"+race+"_"+Charecter.parseClas(Charecter.classes[currentPos]).getName();
-		}else{
-			String image = null;
 		}
 	}
 	
@@ -105,6 +106,8 @@ public class Menu extends JPanel{
 	}
 	Menu(){
 		this.setBackground(Color.black);
+		backgroundImage = Main.loadGif("Background_Default");
+		//backgroundImage = Main.loadImage("Background");
 		setupMenu();
 	}
 	public static void setupMenu(){
@@ -117,13 +120,13 @@ public class Menu extends JPanel{
 	protected void paintComponent(Graphics g){
 		super.paintComponent(g);
 		((Graphics2D) g).scale(Main.scale,Main.scale);
-		//g.drawImage(Main.loadImage("Background"), 0, 0, 555, 325, this);
+		g.drawImage(backgroundImage, 0, 0, 555, 325, this);
 		g.setFont(Main.font);
-		int offset = Main.window.getWidth()/2;
-		Utility.drawString(g, output, Math.max(10,offset/Main.scale-100), 10);
-		g.drawImage(Main.loadImage(image), offset/Main.scale, 10, 64, 64, this);
+		int offset = Main.parent.getWidth()/2;
+		Utility.drawString(g, output, (int) Math.max(10,offset/Main.scale-100), 10);
+		g.drawImage(Main.loadImage(image), (int) (offset/Main.scale), 10, 64, 64, this);
 		
-		Utility.drawString(g, output2, offset/Main.scale, 70, 200);
+		Utility.drawString(g, output2, (int) (offset/Main.scale), 70, 200);
 	}
 
 }

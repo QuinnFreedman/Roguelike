@@ -4,16 +4,19 @@ import java.util.Map;
 import java.util.Random;
 import java.awt.CardLayout;
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.GraphicsEnvironment;
 import java.awt.Image;
+import java.awt.Toolkit;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -36,7 +39,7 @@ public class Main extends JFrame implements KeyListener
 	public static Menu menu;
 	public static JPanel inv;
 	
-	public static int scale = 2;
+	public static double scale = 4;
 	public static boolean isLoading = true;
 	
 	public static Font font = new Font("Courier New", Font.PLAIN, 12);
@@ -82,8 +85,7 @@ public class Main extends JFrame implements KeyListener
 	public Main()
 	{		
 		window = new JFrame();
-		window.setSize(555*scale,325*scale);//440,320
-		window.setLocationRelativeTo(null);
+		//window.setSize(555*scale,325*scale);//440,320
 		//window.setResizable(false);
 		window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		window.setTitle("Roguelike");
@@ -92,7 +94,10 @@ public class Main extends JFrame implements KeyListener
 		window.setFocusTraversalKeysEnabled(false);
 		
 		parent = new JPanel(new CardLayout());
+		parent.setPreferredSize(new Dimension((int) (scale*555),(int) (325*scale)));
 		window.add(parent);
+		window.pack();
+		window.setLocationRelativeTo(null);
 		
 		combat = new Combat();
 		parent.add(combat, COMBAT);
@@ -143,6 +148,20 @@ public class Main extends JFrame implements KeyListener
 		}else{
 			return images.get(srcIndex);
 		}
+	}
+	
+	public static Image loadGif(final String url) {
+	    try {
+	    	Console.log("Toolkit Loading "+url+".gif");
+	    	final Toolkit tk = Toolkit.getDefaultToolkit();
+	       // final URL path = new URL("assets\\Background.png");
+	        final Image img = tk.createImage(new File("assets\\"+url+".gif").getAbsolutePath());
+	        tk.prepareImage(img, -1, -1, null);
+	        return img;
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        return null;
+	    }
 	}
 	
 	@Override

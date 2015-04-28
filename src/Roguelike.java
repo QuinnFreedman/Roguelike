@@ -663,6 +663,7 @@ class tilePanel extends JPanel{
 						this);
 
 				if(isFog){
+					((Graphics2D) g).setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1));
 					g.drawImage(fog,
 							x*Roguelike.tileSize.width, 
 							y*Roguelike.tileSize.height,
@@ -739,6 +740,9 @@ class tilePanel extends JPanel{
 	}
 	
 	public Dimension getPreferredSize() {
-        return new Dimension(((int) ((Roguelike.viewPort.size.width*2)+1)*Roguelike.tileSize.width*Main.scale),((int) ((Roguelike.viewPort.size.height*2)+1)*Roguelike.tileSize.width*Main.scale));
+        return new Dimension(
+        		(int) (((Roguelike.viewPort.size.width*2)+1)*Roguelike.tileSize.width*Main.scale),
+        		(int) (((Roguelike.viewPort.size.height*2)+1)*Roguelike.tileSize.width*Main.scale)
+        	);
     }
 }
