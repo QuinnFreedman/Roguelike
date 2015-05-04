@@ -228,7 +228,7 @@ public class Combat extends JPanel{
 		}
 	//right sidebar
 		g.drawRect(375, 5, 180, 250);
-		Utility.drawString(g, log, 380, 5, 170);
+		Utility.drawString(g, log, 380, 5, 170, 250);
 	}
 	
 	private static void takeTurn(){
@@ -648,6 +648,7 @@ public class Combat extends JPanel{
 				if(selected){
 					((Graphics2D) g).setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.5f));	
 					g.fillRect(x, y, getSize().width, getSize().height);
+					((Graphics2D) g).setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1));
 				}
 				
 			}

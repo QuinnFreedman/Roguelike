@@ -1,9 +1,6 @@
 import java.awt.image.BufferedImage;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-
-import javax.imageio.ImageIO;
 
 public class Charecter{
 	public static String[] classes = {"ASSASIN","MAGE", "KNIGHT"};
@@ -66,13 +63,13 @@ public class Charecter{
 	
 	public void damage(int damage, Charecter source, String type){
 		for(Aura aura : source.auras){
-			if(aura.trigger == "ATTACK"){
+			if(aura.trigger == Aura.TriggerType.ATTACK){
 				aura.effect();
 				aura.effect(damage,source,type);
 			}
 		}
 		for(Aura aura : this.auras){
-			if(aura.trigger == "DEFEND"){
+			if(aura.trigger == Aura.TriggerType.DEFEND){
 				aura.effect();
 				aura.effect(damage,source,type);
 			}
@@ -89,14 +86,14 @@ public class Charecter{
 			damageTaken = damage;
 		}
 		for(Aura aura : source.auras){
-			if(aura.trigger == "onDealDamage"){
+			if(aura.trigger == Aura.TriggerType.onDealDamage){
 				aura.effect();
 				int d = aura.effect(damageTaken,source,type);
 				damageTaken = (d != -1) ? d : damageTaken;
 			}
 		}
 		for(Aura aura : this.auras){
-			if(aura.trigger == "onRecieveDamage"){
+			if(aura.trigger == Aura.TriggerType.onRecieveDamage){
 				aura.effect();
 				int d = aura.effect(damageTaken,source,type);
 				damageTaken = (d != -1) ? d : damageTaken;

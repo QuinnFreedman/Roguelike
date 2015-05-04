@@ -1,16 +1,27 @@
 public class Aura{
-	public String trigger;//upkeep,tick,eot,attack,defend,onDealDamage,onRecieveDamage,trigger(called manually)
+	public TriggerType trigger;//upkeep,tick,eot,attack,defend,onDealDamage,onRecieveDamage,trigger(called manually)
 	public String remove;
 	protected Charecter parent;
 	protected Item parentItem;
 	protected boolean debuff;
 	protected int duration;
 	protected int level;
+	public static enum TriggerType{
+		UPKEEP,
+		TICK,
+		EOT,
+		ATTACK,
+		DEFEND,
+		onDealDamage,
+		onRecieveDamage,
+		TRIGGER
+	}
 	protected void remove(){
 		parent.auras.remove(this);
 	}
 	
-	public void effect(Charecter target){	
+	public void effect(Charecter target){
+		
 	}
 	
 	public int effect(int damage, Charecter source, String type){//for on deal/take damage/att
@@ -18,6 +29,7 @@ public class Aura{
 	}
 	
 	public void effect() {
+		
 	}
 	
 	Aura(Charecter parent, int level){
@@ -34,7 +46,7 @@ public class Aura{
 		private Charecter targetParent;
 		AuraTrigger(Charecter parent, Charecter targetParent, Aura auraToTrigger, String trigger) {
 			super(parent, 0);
-			this.trigger = trigger;
+			this.trigger = TriggerType.TRIGGER;
 			this.auraToTrigger = auraToTrigger;
 		}
 		
@@ -52,12 +64,12 @@ public class Aura{
 		private Aura auraToTrigger;
 		AuraDeleter(Charecter parent, Aura auraToTrigger, String trigger) {//TODO, remove parent field - unused
 			super(parent, 0);
-			this.trigger = trigger;
+			this.trigger = TriggerType.TRIGGER;
 			this.auraToTrigger = auraToTrigger;
 		}
 		AuraDeleter(Charecter parent, Aura auraToTrigger, String trigger, int durration) {//TODO, remove parent field - unused
 			super(parent, 0);
-			this.trigger = trigger;
+			this.trigger = TriggerType.TRIGGER;
 			this.auraToTrigger = auraToTrigger;
 			this.duration = durration;
 		}
@@ -82,7 +94,7 @@ public class Aura{
 		
 		Retreating(Charecter parent, int level) {
 			super(parent, level);
-			this.trigger = "UPKEEP";
+			this.trigger = TriggerType.UPKEEP;
 		}
 	}
 	static class Poison extends Aura{
@@ -102,7 +114,7 @@ public class Aura{
 			super(parent, level);
 			this.debuff = true;
 			this.duration = time[level];
-			this.trigger = "TICK";
+			this.trigger = TriggerType.TICK;
 		}
 	}
 	static class StandBehindMeAura extends Aura{
@@ -117,7 +129,7 @@ public class Aura{
 		StandBehindMeAura(Charecter parent, Charecter target, int level) {
 			super(parent, level);
 			this.debuff = false;
-			this.trigger = "DEFEND";
+			this.trigger = TriggerType.DEFEND;
 			target.auras.add(new AuraDeleter(target, this, "UPKEEP"));
 		}
 
@@ -138,7 +150,7 @@ public class Aura{
 		
 		Shield(Charecter target, Charecter parent, int level, int health){
 			super(parent, level);
-			this.trigger = "DEFEND";
+			this.trigger = TriggerType.DEFEND;
 			this.debuff = false;
 			this.health = health;
 			target.auras.add(new AuraDeleter(target, this, "UPKEEP", 2));
@@ -155,7 +167,7 @@ public class Aura{
 		public PoisonWeapon(Item parentItem, int level) {
 			super(parentItem, level);
 			this.debuff = false;
-			this.trigger = "onDealDamage";
+			this.trigger = TriggerType.onDealDamage;
 			
 		}
 

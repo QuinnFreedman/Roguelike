@@ -53,13 +53,31 @@ public class Utility{
 		for (String line : text.split("\n")){
 	        paragraphs.add(line);
 		}
-		List<String> newParagraphs = new ArrayList<String>();
+		List<String> lines = new ArrayList<String>();
 		for(String str : paragraphs){
 			List<String> wrap = Utility.StringUtils.wrap(str, g.getFontMetrics(g.getFont()), w);
-			newParagraphs.addAll(wrap);
+			lines.addAll(wrap);
 		}
-		for (String line : newParagraphs)
+		for (String line : lines)
 	        g.drawString(line, x, y += g.getFontMetrics().getHeight());
+	}
+	public static void drawString(Graphics g, String text, int x, int y, int w, int h) {
+		List<String> paragraphs = new ArrayList<String>();
+		for (String line : text.split("\n")){
+	        paragraphs.add(line);
+		}
+		List<String> lines = new ArrayList<String>();
+		for(String str : paragraphs){
+			List<String> wrap = Utility.StringUtils.wrap(str, g.getFontMetrics(g.getFont()), w);
+			lines.addAll(wrap);
+		}
+		
+		int numberOflines = (g.getFontMetrics().getHeight()*lines.size() <= h) ? lines.size() : (int) Math.floor(h/(g.getFontMetrics().getHeight()));
+
+		for (int i = lines.size()-numberOflines; i < lines.size(); i++){
+			g.drawString(lines.get(i), x, y += g.getFontMetrics().getHeight());
+	        
+		}
 	}
 
 	/**
