@@ -1,3 +1,6 @@
+import java.awt.Image;
+import java.awt.image.BufferedImage;
+
 public class Aura{
 	public TriggerType trigger;//upkeep,tick,eot,attack,defend,onDealDamage,onRecieveDamage,trigger(called manually)
 	public String remove;
@@ -6,6 +9,7 @@ public class Aura{
 	protected boolean debuff;
 	protected int duration;
 	protected int level;
+	private String icon = null;
 	public static enum TriggerType{
 		UPKEEP,
 		TICK,
@@ -26,6 +30,10 @@ public class Aura{
 	
 	public int effect(int damage, Charecter source, String type){//for on deal/take damage/att
 		return -1;
+	}
+	
+	public Image getIcon() {
+		return Main.loadImage(this.icon);
 	}
 	
 	public void effect() {

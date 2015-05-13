@@ -1,4 +1,3 @@
-import java.awt.Rectangle;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -106,6 +105,3 @@ public class Room
 		Console.log(-1, "Room Done");
 	}
 }
-//TODO for each room, on creation, check if overlaps any others.
-//for each side w/ overlap, if no overlap on opposite side - move 1 away from that side
-//if overlap on all sides, delete room.

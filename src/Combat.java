@@ -1,12 +1,8 @@
 import java.awt.AlphaComposite;
-import java.awt.CardLayout;
 import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.FlowLayout;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.GridLayout;
-import java.awt.RenderingHints;
 import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
@@ -15,10 +11,6 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.ListIterator;
 
-import javax.swing.BorderFactory;
-import javax.swing.BoxLayout;
-import javax.swing.ImageIcon;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
 //TODO make ability.isAble(charecter) check (for has weapon, etc), also check resources
 public class Combat extends JPanel{
@@ -244,13 +236,13 @@ public class Combat extends JPanel{
 		}
 		for(Charecter charecter : orderedList){
 			for(Aura aura : charecter.auras){
-				if(aura.trigger == "TICK"){
+				if(aura.trigger == Aura.TriggerType.TICK){
 					aura.effect();
 				}
 			}
 		}
 		for(Aura aura : active.auras){
-			if(aura.trigger == "UPKEEP"){
+			if(aura.trigger == Aura.TriggerType.UPKEEP){
 				aura.effect();
 			}
 		}
@@ -284,6 +276,7 @@ public class Combat extends JPanel{
 					int get = (int) Math.floor(Math.random()*targets.size());
 					target = targets.get(get);
 					takeTurn2();
+					return;
 				}else{
 					wait(active);
 				}
@@ -298,6 +291,7 @@ public class Combat extends JPanel{
 				//log(active.race+" "+active.clas.getName()+" is stunned");
 			}
 			takeTurn3();
+			return;
 		}
 	}
 	private static void takeTurn2(){
@@ -319,7 +313,7 @@ public class Combat extends JPanel{
 		Console.log("takeTurn3");
 		//EOT
 		for(Aura aura : active.auras){
-			if(aura.trigger == "EOT"){
+			if(aura.trigger == Aura.TriggerType.EOT){
 				aura.effect();
 			}
 		}
@@ -343,7 +337,7 @@ public class Combat extends JPanel{
 			}
 		}
 		
-		active.selected = '_';
+		//active.selected = '_';
 		if(active.parent == Main.player){
 			alliedIcons[active.position.x][active.position.y].setActive(false);
 		}else{

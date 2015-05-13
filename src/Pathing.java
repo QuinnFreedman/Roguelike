@@ -55,6 +55,7 @@ public class Pathing{
 					}else{
 						Roguelike.debugBoard[startPoint.y][startPoint.x] = 'O';
 					}
+					int saveE = 0;
 					for(int e = 0; e < Roguelike.rooms.size(); e++){
 						if(e != i){//check if not in same room, if is connected, if is not self
 							if(connected.contains(e) || connected.contains(i)){//if room is not connected, must connect to a connected room. else, does not matter
@@ -69,7 +70,7 @@ public class Pathing{
 										|| distanceToDoor == -1)
 									{
 										endpoint = Roguelike.rooms.get(e).roomDoors.get(f);
-										
+										saveE = e;
 										distanceToDoor = distanceBetween(startPoint, endpoint);
 									}
 								}
@@ -81,6 +82,10 @@ public class Pathing{
 					Main.debug.DrawLine(startPoint, endpoint);
 					if(!connected.contains(i)){
 						connected.add(i);
+						Console.log("connected.size() = "+connected.size());
+						Console.log("connected = "+connected);
+					}else if(!connected.contains(saveE)){
+						connected.add(saveE);
 						Console.log("connected.size() = "+connected.size());
 						Console.log("connected = "+connected);
 					}
@@ -244,6 +249,25 @@ public class Pathing{
 						}
 					}
 				}
+			}
+		}
+		for(Point door : Roguelike.rooms.get(0).roomDoors){
+			if(Roguelike.walls[door.y][door.x+1] == 0){
+				//TODO remove door
+				Roguelike.walls[door.y][door.x] = 1;
+				continue;
+			}else if(Roguelike.walls[door.y][door.x-1] == 0){
+				//TODO remove door
+				Roguelike.walls[door.y][door.x] = 1;
+				continue;
+			}else if(Roguelike.walls[door.y+1][door.x] == 0){
+				//TODO remove door
+				Roguelike.walls[door.y][door.x] = 1;
+				continue;
+			}else if(Roguelike.walls[door.y-1][door.x] == 0){
+				//TODO remove door
+				Roguelike.walls[door.y][door.x] = 1;
+				continue;
 			}
 		}
 	}
