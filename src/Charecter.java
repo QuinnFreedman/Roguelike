@@ -32,7 +32,6 @@ public class Charecter{
 	public ItemSet items = new ItemSet();//equipped
 	public List<Aura> auras = new ArrayList<Aura>();
 	public Party parent;
-	public char selected = '_'; //_ = null, *=selected, > = active
 	public int levelUpPoints = 0;
 	public int exp = 0;
 	public String getSrcIndex(){
@@ -139,6 +138,7 @@ public class Charecter{
 		this.abilities = new ArrayList<Ability>();
 		abilities.add(new Ability.BasicAttack(this,0));
 		abilities.add(new Ability.Throw(this,0));
+		abilities.add(new Ability.PoisonStrike(this, 0));
 		
 		setupSrcImage();
 		

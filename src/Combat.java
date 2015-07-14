@@ -8,6 +8,7 @@ import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 
@@ -234,14 +235,21 @@ public class Combat extends JPanel{
 			charecter.currentMana += charecter.manaRegen;
 			charecter.currentEnergy += charecter.energyRegen;
 		}
-		for(Charecter charecter : orderedList){
-			for(Aura aura : charecter.auras){
+		//All aura effects
+		Iterator<Charecter> charItr = orderedList.iterator();
+		while(charItr.hasNext()) {
+	    	Charecter charecter = charItr.next();
+	    	Iterator<Aura> auraItr = charecter.auras.iterator();
+	    	while(auraItr.hasNext()) {
+		    	Aura aura = auraItr.next();//TODO concurent mod except
 				if(aura.trigger == Aura.TriggerType.TICK){
 					aura.effect();
 				}
 			}
 		}
-		for(Aura aura : active.auras){
+		Iterator<Aura> auraItr = active.auras.iterator();
+    	while(auraItr.hasNext()) {
+	    	Aura aura = auraItr.next();
 			if(aura.trigger == Aura.TriggerType.UPKEEP){
 				aura.effect();
 			}
@@ -515,7 +523,6 @@ public class Combat extends JPanel{
 				targets = getInRangeCharecters(active, ability, ability.getRange(weapon));
 				if(targets != null){
 					target = targets.get(0);
-					target.selected = '>';
 					select(target,true);
 					print("Choose Target");
 					currentMenu = MenuState.TARGET;
@@ -534,14 +541,11 @@ public class Combat extends JPanel{
 			}
 			currentTarget = Math.abs(currentTarget%targets.size());
 			for(Charecter charecter : targets){
-				charecter.selected = '_';
 				select(charecter,false);
 			}
-			targets.get(currentTarget).selected = '>';
 			select(targets.get(currentTarget),true);
 			if(c == KeyEvent.VK_ENTER){
 				target = targets.get(currentTarget);
-				target.selected = '_';
 				select(target,false);
 				takeTurn2();
 			}
@@ -682,7 +686,9 @@ public class Combat extends JPanel{
 		public void paint(Graphics g, int x, int y){
 			Utility.drawString(g, this.label1, x+37, y, 98);
 			g.drawImage(c.getIcon(), x+5, y+5, Main.combat);
-			//TODO draw auras
+			for(int i = 0; i < c.auras.size(); i++){
+				g.drawImage(c.auras.get(i).getIcon(), x+5+37*i, y+45, 32, 32, Main.combat);
+			}
 			Utility.drawString(g, this.label2, x+5, y+61, 130);
 		}
 		DetailedInfo(){

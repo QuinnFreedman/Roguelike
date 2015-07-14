@@ -9,7 +9,7 @@ public class Aura{
 	protected boolean debuff;
 	protected int duration;
 	protected int level;
-	private String icon = null;
+	protected String icon = null;
 	public static enum TriggerType{
 		UPKEEP,
 		TICK,
@@ -33,7 +33,7 @@ public class Aura{
 	}
 	
 	public Image getIcon() {
-		return Main.loadImage(this.icon);
+		return Main.loadImage("auraIcons\\"+this.icon);
 	}
 	
 	public void effect() {
@@ -123,6 +123,7 @@ public class Aura{
 			this.debuff = true;
 			this.duration = time[level];
 			this.trigger = TriggerType.TICK;
+			this.icon = "poison";
 		}
 	}
 	static class StandBehindMeAura extends Aura{

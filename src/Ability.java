@@ -133,8 +133,8 @@ class Ability{//TODO, on level up, each character receives 3 points. cost 2 to l
 		@Override
 		public boolean effect(Charecter[] target, Weapon weapon){
 			if(BasicAttack.getHit(target[0], weapon, parent)){
-				this.target[0].damage((int)Math.round(BasicAttack.getDamage(weapon,parent)*this.powerRatio[this.level]), this.parent, "PHYSICAL");
-				this.target[0].auras.add(new Aura.Poison(target[0],this.level));
+				target[0].damage((int)Math.round(BasicAttack.getDamage(weapon,parent)*this.powerRatio[this.level]),this.parent, "PHYSICAL");
+				target[0].auras.add(new Aura.Poison(target[0],this.level));
 				return false;
 			}else{
 				return false;
