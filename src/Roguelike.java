@@ -6,10 +6,13 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Image;
+import java.awt.Toolkit;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -21,9 +24,11 @@ import java.util.Random;
 
 import javax.imageio.ImageIO;
 import javax.swing.BorderFactory;
+import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.border.Border;
+import javax.swing.filechooser.FileNameExtensionFilter;
 
 public class Roguelike{
 	public static Dimension map = new Dimension(30,20);
@@ -616,6 +621,42 @@ public class Roguelike{
 	    	Main.window.dispatchEvent(new WindowEvent(Main.window, WindowEvent.WINDOW_CLOSING));
         } else if(c==KeyEvent.VK_1){
         	noClip  = noClip ? false : true;
+        } else if(c==KeyEvent.VK_C){
+        	//*************DEBUG ONLY***************************
+        	JFileChooser fc = new JFileChooser();
+            fc.setCurrentDirectory(new File(System.getProperty("user.home")+"/workspace/Roguelike/assets"));
+        	fc.setFileFilter(new FileNameExtensionFilter("gif","gif"));
+        	fc.setFileFilter(new FileNameExtensionFilter("png","png"));
+        	
+        	int returnVal = fc.showOpenDialog(Main.window);
+
+            if (returnVal == JFileChooser.APPROVE_OPTION) {
+                File file = fc.getSelectedFile();
+                Console.log("Opening: " + file.getAbsolutePath() + "...");
+                
+                String fileName = file.getAbsolutePath();
+                String extension = "";
+                int i = fileName.lastIndexOf('.');
+                if (i > 0) {
+                    extension = fileName.substring(i+1);
+                }
+                
+                if(extension.equals("gif") || extension.equals("png")){
+                	try {
+            	    	//final Toolkit tk = Toolkit.getDefaultToolkit();
+                		//final URL path = new URL("assets\\Background.png");
+            	        //final Image img = tk.createImage(fileName);
+            	        //tk.prepareImage(img, -1, -1, null);
+            	        Main.images.put(fileName, ImageIO.read(file));
+            	        Main.player.setSrcIndex(fileName);
+            	        Main.roguelike.revalidate();
+            	        Main.roguelike.repaint();
+            	    } catch (Exception e) {
+            	        e.printStackTrace();
+            	    }
+                }
+            }
+            //***************DEBUG END*******************
         }
 		
 	}

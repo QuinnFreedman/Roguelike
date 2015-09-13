@@ -44,6 +44,11 @@ public class Party
 		}
 		this.srcIndex = this.allies.get(i).getSrcIndex();
 	}
+	//DEBUG TOOL
+	void setSrcIndex(String src){
+		this.srcIndex = src;
+	}
+	
 	public BufferedImage getIcon(){
 		return Main.images.get(this.srcIndex);
 	}
