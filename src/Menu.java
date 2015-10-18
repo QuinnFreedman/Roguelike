@@ -43,7 +43,7 @@ public class Menu extends JPanel{
 						+ Charecter.races[i]
 						+((currentPos == i) ? " *\n" : "\n");
 			}
-			image = "characterTiles\\"+Charecter.races[currentPos]+"_Adventurer";
+			image = "characterTiles/"+Charecter.races[currentPos]+"_Adventurer";
 		}else if(currentMenu == CLASS){
 			output += "Choose Class\n";
 			for(int i = 0; i < Charecter.classes.length; i++){
@@ -52,7 +52,7 @@ public class Menu extends JPanel{
 						+((currentPos == i) ? " *\n" : "\n");
 			}
 			output2 += Charecter.parseClas(Charecter.classes[currentPos]).getInfo();//TODO, make parse return static, not instantiated
-			image = "characterTiles\\"+race+"_"+Charecter.parseClas(Charecter.classes[currentPos]).getName();
+			image = "characterTiles/"+race+"_"+Charecter.parseClas(Charecter.classes[currentPos]).getName();
 		}
 	}
 	

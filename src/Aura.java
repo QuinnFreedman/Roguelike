@@ -34,7 +34,7 @@ public class Aura{
 	}
 	
 	public Image getIcon() {
-		return Main.loadImage("auraIcons\\"+this.icon);
+		return Main.loadImage("auraIcons/"+this.icon);
 	}
 	
 	public void effect() {

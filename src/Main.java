@@ -65,7 +65,7 @@ public class Main extends JFrame implements KeyListener
 		try {
 			GraphicsEnvironment ge = 
 		    	GraphicsEnvironment.getLocalGraphicsEnvironment();
-			Font newFont = Font.createFont(Font.TRUETYPE_FONT, new File("assets\\font\\pixelated.ttf"));
+			Font newFont = Font.createFont(Font.TRUETYPE_FONT, new File("assets/font/pixelated.ttf"));
 			ge.registerFont(newFont);
 			font = newFont.deriveFont(14f);
 		} catch (Exception e) {
@@ -155,7 +155,7 @@ public class Main extends JFrame implements KeyListener
 	    	Console.log("Toolkit Loading "+url+".gif");
 	    	final Toolkit tk = Toolkit.getDefaultToolkit();
 	       // final URL path = new URL("assets\\Background.png");
-	        final Image img = tk.createImage(new File("assets\\"+url+".gif").getAbsolutePath());
+	        final Image img = tk.createImage(new File("assets/"+url+".gif").getAbsolutePath());
 	        tk.prepareImage(img, -1, -1, null);
 	        return img;
 	    } catch (Exception e) {

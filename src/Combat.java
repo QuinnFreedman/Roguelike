@@ -534,7 +534,7 @@ public class Combat extends JPanel{
 				if(currentWeapon > 0)
 					currentWeapon--;
 			} else if(c==KeyEvent.VK_RIGHT) {
-				if(currentWeapon < ((active.items.PRIMAIRY.getClass().getSuperclass().getName() == "WEAPON" && active.items.SECONDAIRY.getClass().getSuperclass().getName() == "WEAPON") ? 1 : 0))
+				if(currentWeapon < ((active.items.PRIMAIRY != null && active.items.SECONDAIRY != null) ? 1 : 0))
 					currentWeapon++;
 			}else if(c == KeyEvent.VK_ENTER){
 				weapon = currentWeapon == 0 ? active.items.PRIMAIRY.getWeapon() : active.items.SECONDAIRY.getWeapon();
