@@ -39,7 +39,7 @@ public class Main extends JFrame implements KeyListener
 	public static Menu menu;
 	public static JPanel inv;
 	
-	public static double scale = 2;
+	public static double scale = 4;
 	public static boolean isLoading = true;
 	
 	public static Font font = new Font("Courier New", Font.PLAIN, 12);
