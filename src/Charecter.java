@@ -31,6 +31,7 @@ public class Charecter{
 	public List<Ability> abilities;
 	public ItemSet items = new ItemSet();//equipped
 	public List<Aura> auras = new ArrayList<Aura>();
+	public ArrayList<Aura> aurasRemoveTemp = new ArrayList<Aura>();
 	public Party parent;
 	public int levelUpPoints = 0;
 	public int exp = 0;
@@ -61,6 +62,10 @@ public class Charecter{
 	}
 	
 	public void damage(int damage, Charecter source, String type){
+		damage(damage, source, type, "it does %DAMAGE damage");
+	}
+	
+	public void damage(int damage, Charecter source, String type, String message){
 		for(Aura aura : source.auras){
 			if(aura.trigger == Aura.TriggerType.ATTACK){
 				aura.effect();
@@ -74,13 +79,20 @@ public class Charecter{
 			}
 		}
 		int damageTaken;
-		Combat.log("it does "+damage+" damage");
+		Combat.log(
+				message
+				.replaceAll("%DAMAGE", String.valueOf(damage))
+				.replaceAll("%PARENT", this.getName()));
 		if(type == "PHYSICAL"){
 			damageTaken = damage * (100/(100+this.armor));
-			Combat.log((Math.abs(damage-damageTaken))+" damage is prevented by the "+this.clas.getName()+"'s armor");
+			int damagePrevented = damage-damageTaken;
+			if(damagePrevented != 0)
+				Combat.log(damagePrevented+" damage is prevented by the "+this.clas.getName()+"'s armor");
 		}else if(type == "MAGIC"){
 			damageTaken = damage * (100/(100+this.magicResist));
-			Combat.log((Math.abs(damage-damageTaken))+" damage is prevented by the "+this.race+"'s magic resistance");
+			int damagePrevented = damage-damageTaken;
+			if(damagePrevented != 0)
+				Combat.log(damagePrevented+" damage is prevented by the "+this.clas.getName()+"'s magic resistance");
 		}else{
 			damageTaken = damage;
 		}
@@ -100,6 +112,12 @@ public class Charecter{
 		}
 		damageTaken = (damageTaken < 0) ? 0 : damageTaken;
 		this.currentHealth -= damageTaken;
+	}
+	public String getName() {
+		if(this.name != null)
+			return this.name;
+		else
+			return "the "+this.race+" "+this.clas.getName();
 	}
 	protected void setupSrcImage() {
 		this.srcIndex = "/characterTiles/"+this.race+"_"+this.clas.getName();
@@ -129,6 +147,9 @@ public class Charecter{
 		this.energy = this.clas.getEnergy();
 		this.damage = this.clas.getDamage();
 		this.restore();
+		this.energyRegen = this.clas.getEnergyRegen();
+		this.manaRegen = this.clas.getManaRegen();
+		this.healthRegen = this.clas.getHealthRegen();
 		this.magicDamage = this.clas.getMagicDamage();
 		this.armor = this.clas.getArmor();
 		this.magicResist = this.clas.getMagicResist();
@@ -138,7 +159,13 @@ public class Charecter{
 		this.abilities = new ArrayList<Ability>();
 		abilities.add(new Ability.BasicAttack(this,0));
 		abilities.add(new Ability.Throw(this,0));
-		abilities.add(new Ability.PoisonStrike(this, 0));
+		if(this.clas instanceof Mage){
+			abilities.add(new Ability.Zap(this, 0));
+			this.items.SECONDAIRY = new Weapon.WoodenStaff();
+		}else if(this.clas instanceof Assassin)
+			abilities.add(new Ability.PoisonStrike(this, 0));
+		else if(this.clas instanceof Knight)
+			abilities.add( new Ability.BruteForce(this, 0));
 		
 		setupSrcImage();
 		
@@ -148,6 +175,24 @@ public class Charecter{
 		this.currentHealth = this.health;
 		this.currentMana = this.mana;
 		this.currentEnergy = this.energy;
+	}
+	public void setCurrentHealth(int newHealth) {
+		this.currentHealth = Math.min(
+				newHealth,
+				this.health
+				);
+	}
+	public void setCurrentEnergy(int newEnergy) {
+		this.currentEnergy = Math.min(
+				newEnergy,
+				this.energy
+				);
+	}
+	public void setCurrentMana(int newMana) {
+		this.currentMana = Math.min(
+				newMana,
+				this.mana
+				);
 	}
 }
 class ItemSet{
@@ -305,6 +350,7 @@ class Assassin extends clas{
 		this.name = "Assassin";
 		this.percentFront = 80;
 		this.description = "A fast unit with high damage and agility but low health";
+		this.energyRegen = 8;
 	}
 }
 class Mage extends clas{
@@ -361,6 +407,8 @@ class Mage extends clas{
 		this.name = "Mage";
 		this.percentFront = 30;
 		this.description = "A magical unit high magic damage but low health";
+		this.manaRegen = 10;
+		this.energyRegen = 5;
 	}
 }
 class Knight extends clas{
@@ -417,6 +465,7 @@ class Knight extends clas{
 		this.name = "Knight";
 		this.percentFront = 100;
 		this.description = "A slow unit with a lot of health";
+		this.energyRegen = 10;
 	}
 }
 //TODO, organize stats into tree or array -> choose one at random each level up 

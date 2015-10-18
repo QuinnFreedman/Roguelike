@@ -231,17 +231,27 @@ public class Combat extends JPanel{
 		about.setChar(active);
 		//UPKEEP
 		for(Charecter charecter : orderedList){
-			charecter.currentHealth += charecter.healthRegen;
-			charecter.currentMana += charecter.manaRegen;
-			charecter.currentEnergy += charecter.energyRegen;
+			charecter.setCurrentHealth(charecter.currentHealth + charecter.healthRegen);
+			charecter.setCurrentMana(charecter.currentMana + charecter.manaRegen);
+			charecter.setCurrentEnergy(charecter.currentEnergy + charecter.energyRegen);
 		}
+		
+		for(int x = 0; x < 2; x++){
+			for(int y = 0; y < 2; y++){
+				if(enemyIcons[x][y] != null)
+					enemyIcons[x][y].update();
+				if(alliedIcons[x][y] != null)
+					alliedIcons[x][y].update();
+			}
+		}
+		
 		//All aura effects
 		Iterator<Charecter> charItr = orderedList.iterator();
 		while(charItr.hasNext()) {
 	    	Charecter charecter = charItr.next();
 	    	Iterator<Aura> auraItr = charecter.auras.iterator();
 	    	while(auraItr.hasNext()) {
-		    	Aura aura = auraItr.next();//TODO concurent mod except
+		    	Aura aura = auraItr.next();
 				if(aura.trigger == Aura.TriggerType.TICK){
 					aura.effect();
 				}
@@ -254,11 +264,13 @@ public class Combat extends JPanel{
 				aura.effect();
 			}
 		}
+    	active.auras.removeAll(active.aurasRemoveTemp);
+    	active.aurasRemoveTemp.clear();
 		cleanup();
 		//COMBAT
 		if(orderedList.contains(active) && active.stunned == false){
 			if(active.parent != Main.player){//NPC
-				Console.log(1,"NPC "+active.race+" "+active.clas.getName());
+				Console.log(1,"NPC "+active.getName());
 				int abilityIndex = 0;
 				boolean cont;
 				do{
@@ -296,7 +308,7 @@ public class Combat extends JPanel{
 		}else{
 			if(active.stunned){
 				active.stunned = false;
-				//log(active.race+" "+active.clas.getName()+" is stunned");
+				//log(active.getName()+" is stunned");
 			}
 			takeTurn3();
 			return;
@@ -305,15 +317,19 @@ public class Combat extends JPanel{
 	private static void takeTurn2(){
 		Console.log("takeTurn2");
 		if(ability != null){
-			log(active.race+" "+active.clas.getName()+" uses "+ability.name+" with his "+weapon.id+" on "+target.race+" "+target.clas.getName());
-			boolean b = ability.effect(new Charecter[]{target}, (Weapon) active.items.PRIMAIRY);
-			if(!b){
-				log("The "+target.clas.getName()+" dodges the ability");
+			if(ability.name.equals("Throw") && weapon.id.equals("fists")){
+				log(active.getName()+" throws nothing");
+			}else{
+				log(active.getName()+" uses "+ability.name+" with his "+weapon.id+" on "+target.race+" "+target.clas.getName());
+				boolean b = ability.effect(new Charecter[]{target}, (Weapon) active.items.PRIMAIRY);
+				if(!b){
+					log("The "+target.clas.getName()+" dodges the ability");
+				}
+				if(ability.getEnergyCost() != -1)
+					active.currentEnergy -= ability.getEnergyCost();
+				if(ability.getManaCost() != -1)
+					active.currentMana -= ability.getManaCost();
 			}
-			if(ability.getEnergyCost() != -1)
-				active.currentEnergy -= ability.getEnergyCost();
-			if(ability.getManaCost() != -1)
-				active.currentMana -= ability.getManaCost();
 		}
 		takeTurn3();
 	}
@@ -325,6 +341,8 @@ public class Combat extends JPanel{
 				aura.effect();
 			}
 		}
+    	active.auras.removeAll(active.aurasRemoveTemp);
+    	active.aurasRemoveTemp.clear();
 		cleanup();
 		Console.log(-1,"");
 		
@@ -442,7 +460,7 @@ public class Combat extends JPanel{
 		return inRangeCharecters;
 	}
 	private static void retreat(Charecter charecter){
-		log("The "+charecter.race+" "+charecter.clas.name+" is retreating");
+		log("The "+charecter.getName()+" is retreating");
 		charecter.auras.add(new Aura.Retreating(charecter, 0));
 	}
 	private static void print(String s){
@@ -627,6 +645,9 @@ public class Combat extends JPanel{
 		}
 		public void paint(Graphics g, int x, int y){
 			if(this.c != null){
+				for(int i = 0; i < c.auras.size(); i++){
+					g.drawImage(c.auras.get(i).getIcon(), x+16*i, y+16*(i%4), 16, 16, Main.combat);
+				}
 				g.drawImage(image, x, y, 64, 64, Main.combat);
 				g.setColor(new Color(0x880000));
 				g.drawRect(x+64, y, 9, 63);

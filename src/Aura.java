@@ -21,7 +21,8 @@ public class Aura{
 		TRIGGER
 	}
 	protected void remove(){
-		parent.auras.remove(this);
+		parent.aurasRemoveTemp.add(this);
+		//parent.auras.remove(this);
 	}
 	
 	public void effect(Charecter target){
@@ -111,7 +112,8 @@ public class Aura{
 		
 		@Override
 		public void effect(){
-			parent.damage(damage[level],this.parent,"TRUE");
+			parent.damage(damage[level],this.parent,"TRUE",
+					"%PARENT is poisoned for %DAMAGE damage");
 			this.duration--;
 			if(duration <= 0){
 				this.remove();

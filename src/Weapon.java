@@ -56,4 +56,16 @@ public class Weapon extends Item{
 			this.size = 2;
 		}
 	}
+	
+	static class WoodenStaff extends Weapon{
+		WoodenStaff(){
+			this.id = "Wooden Staff";
+			this.accuracyModifier = 90;
+			this.damageModifier = new int[]{-1,1,4};
+			this.throwDamageModifier = new int[]{-3,1,4};
+			this.magicDamageModifier = new int[]{2,0,0};
+			this.range = 0;
+			this.size = 2;
+		}
+	}
 }

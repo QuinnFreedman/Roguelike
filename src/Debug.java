@@ -13,6 +13,7 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
+@SuppressWarnings("serial")
 public class Debug extends JFrame implements KeyListener{
 	
 	public static List<BufferedImage> images = new ArrayList<BufferedImage>();
@@ -23,7 +24,7 @@ public class Debug extends JFrame implements KeyListener{
 	private JPanel Display;
 	public static long startTime;
 	public static long lastTime;
-	private boolean debugOn = true;
+	private boolean debugOn = false;
 	
 	public static int scale = 16;
 
@@ -135,6 +136,8 @@ public class Debug extends JFrame implements KeyListener{
 		}
 	}
 	public void finish(){
+		if(!debugOn)
+			return;
 		draw.done = true;
 		update();
 		draw.done = false;

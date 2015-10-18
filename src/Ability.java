@@ -156,8 +156,7 @@ class Ability{//TODO, on level up, each character receives 3 points. cost 2 to l
 			if(BasicAttack.getHit(target[0], weapon, parent)){
 				target[0].damage(
 						(int) Math.round(
-								BasicAttack.
-								getDamage(weapon,this.parent)*
+								BasicAttack.getDamage(weapon,this.parent)*
 								this.powerRatio[this.level]),
 								parent, 
 								"PHYSICAL");
