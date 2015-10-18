@@ -119,14 +119,15 @@ public class Menu extends JPanel{
 	@Override
 	protected void paintComponent(Graphics g){
 		super.paintComponent(g);
-		((Graphics2D) g).scale(Main.scale,Main.scale);
+		((Graphics2D) g).scale(Main.scale, Main.scale);
 		g.drawImage(backgroundImage, 0, 0, 555, 325, this);
 		g.setFont(Main.font);
-		int offset = Main.parent.getWidth()/2;
-		Utility.drawString(g, output, (int) Math.max(10,offset/Main.scale-100), 10);
-		g.drawImage(Main.loadImage(image), (int) (offset/Main.scale), 10, 64, 64, this);
+		//int offset = Main.parent.getWidth()/2;
+		g.setColor(Color.black);
+		Utility.drawString(g, output, (int) Math.round(4*Main.scale), (int) Math.round(2*Main.scale));//(int) Math.max(10,offset/Main.scale-100), 10);
+		g.drawImage(Main.loadImage(image), (int) Math.round(170*Main.scale), (int) Math.round(30*Main.scale), 64, 64, this);
 		
-		Utility.drawString(g, output2, (int) (offset/Main.scale), 70, 200);
+		Utility.drawString(g, output2, (int) Math.round(50*Main.scale), (int) Math.round(2*Main.scale), 200);
 	}
 
 }

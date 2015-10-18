@@ -44,9 +44,9 @@ public class Main extends JFrame implements KeyListener
 	
 	public static Font font = new Font("Courier New", Font.PLAIN, 12);
 	
-	public static String ROGUELIKE = "ROGUELIKE";	
-	public static String COMBAT = "COMBAT";	
-	public static String MENU = "MENU";	
+	public static String ROGUELIKE = "ROGUELIKE";
+	public static String COMBAT = "COMBAT";
+	public static String MENU = "MENU";
 	public static String INV = "INV";
 	
 	public static String currentlyDisplayed = MENU;
