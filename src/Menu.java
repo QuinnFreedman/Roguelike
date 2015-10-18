@@ -124,10 +124,10 @@ public class Menu extends JPanel{
 		g.setFont(Main.font);
 		//int offset = Main.parent.getWidth()/2;
 		g.setColor(Color.black);
-		Utility.drawString(g, output, (int) Math.round(4*Main.scale), (int) Math.round(2*Main.scale));//(int) Math.max(10,offset/Main.scale-100), 10);
-		g.drawImage(Main.loadImage(image), (int) Math.round(170*Main.scale), (int) Math.round(30*Main.scale), 64, 64, this);
+		Utility.drawString(g, output, 8, 4);//(int) Math.max(10,offset/Main.scale-100), 10);
+		g.drawImage(Main.loadImage(image), 340, 60, 64, 64, this);
 		
-		Utility.drawString(g, output2, (int) Math.round(50*Main.scale), (int) Math.round(2*Main.scale), 200);
+		Utility.drawString(g, output2, 100, 4, 200);
 	}
 
 }
