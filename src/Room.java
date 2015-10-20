@@ -53,8 +53,8 @@ public class Room
 				){
 					corner = true;
 					Console.log("!!corner = true!!");
-				}else if(roomWalls.get(k).y == Roguelike.board.length - 1 ||
-						roomWalls.get(k).x == Roguelike.board[0].length - 1 ||
+				}else if(roomWalls.get(k).y == Roguelike.level.board.length - 1 ||
+						roomWalls.get(k).x == Roguelike.level.board[0].length - 1 ||
 						roomWalls.get(k).y == 0 ||
 						roomWalls.get(k).x == 0
 				){
@@ -62,7 +62,6 @@ public class Room
 					Console.log();
 					Console.log("!!wall = true!!");
 				}else{
-					//roomWalls.get(k).x = -1;
 					roomDoors.add(roomWalls.get(k));
 					roomWalls.remove(k);
 				}
@@ -77,8 +76,8 @@ public class Room
 		Console.log("New Room");
 		h = randomBtwn(4, 7);
 		w = randomBtwn(4, 7);
-		xpos = randomBtwn(0, Roguelike.map.width-this.w);
-		ypos = randomBtwn(0, Roguelike.map.height-this.h);
+		xpos = randomBtwn(0, Roguelike.level.size.width-this.w);
+		ypos = randomBtwn(0, Roguelike.level.size.height-this.h);
 		//construct();
 	}
 	Room(int h, int w, int x, int y){

@@ -96,7 +96,7 @@ public class Menu extends JPanel{
 
         		Inventory.setup();
         		
-    			Roguelike.parties[Main.player.getYpos()][Main.player.getXpos()] = Main.player.getSrcIndex();
+    			Roguelike.level.parties[Main.player.getYpos()][Main.player.getXpos()] = Main.player.getSrcIndex();
         		Roguelike.render();
         		Main.display(Main.ROGUELIKE);
     		}

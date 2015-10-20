@@ -31,26 +31,17 @@ import javax.swing.border.Border;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 public class Roguelike{
-	public static Dimension map = new Dimension(30,20);
 	public static Dimension tileSize = new Dimension(32,32);
 	
 	public static viewPort viewPort = new viewPort(new Dimension(6,4),new Point());
-	
-	public static char[][] board = new char[map.height][map.width];
-	public static int[][] walls = new int[map.height][map.width];
-	public static int[][] dynamicElements = new int[map.height][map.width];
-	public static String[][] parties = new String[map.height][map.width];
-	public static boolean[][] visibleArea;
-	
-	private static int[][] overlapWeight = new int[map.height][map.width];
-	
-	public static char[][] debugBoard = new char[map.height][map.width];
+
+	protected static Level level;
 	
 	private static char[] textures = new char[]{'.','%','-','+'};
 	
 	private static List<Party> monsters = new ArrayList<Party>();
 	
-	public static List<Room> rooms = new ArrayList<Room>();
+	public static ArrayList<Room> rooms = new ArrayList<Room>();
 	
 	private static int numberOfPartys = 0;
 	
@@ -86,8 +77,8 @@ public class Roguelike{
 	}
 	
 	public static void init(int s){
-		Debug.startTime = System.nanoTime();
-		Debug.lastTime = Debug.startTime;
+		level = new Level(30,20);
+		Main.debug = new Debug(level);
 		
 		Main.debug.clear();
 		Menu.setupMenu();
@@ -98,6 +89,7 @@ public class Roguelike{
 		Main.seed = s;
 		Main.generator = new Random(s);
 		Console.log("seed = "+s);
+
 				
 		clearWalls();
 		Console.benchmark();
@@ -106,7 +98,6 @@ public class Roguelike{
 		setPaths();
 		Console.benchmark();
 		clear();
-		visibleArea = new boolean[map.height][map.width];
 		
 		int random = (int) Math.floor(Math.random()*rooms.size());
 		Room room = rooms.get(random);
@@ -115,8 +106,8 @@ public class Roguelike{
 		monsters.clear();
 		rooms.clear();
 		
-		board[Main.player.getYpos()][Main.player.getXpos()] = Main.player.getId();
-		parties[Main.player.getYpos()][Main.player.getXpos()] = Main.player.getSrcIndex();
+		level.board[Main.player.getYpos()][Main.player.getXpos()] = Main.player.getId();
+		level.parties[Main.player.getYpos()][Main.player.getXpos()] = Main.player.getSrcIndex();
 		
 		for(int i = 0; i < numberOfPartys; i++){
 			
@@ -124,13 +115,13 @@ public class Roguelike{
 			int localypos;			
 			
 			do{
-				localypos = (int) Math.floor(Main.generator.nextDouble()*board.length);
-				localxpos = (int) Math.floor(Main.generator.nextDouble()*board[0].length);
+				localypos = (int) Math.floor(Main.generator.nextDouble()*level.board.length);
+				localxpos = (int) Math.floor(Main.generator.nextDouble()*level.board[0].length);
 				
 			}while(isClear(localypos,localxpos) == false);
 			
 			monsters.add(new Party('X',localxpos,localypos));
-			board[monsters.get(i).getYpos()][monsters.get(i).getXpos()] = monsters.get(i).getId();
+			level.board[monsters.get(i).getYpos()][monsters.get(i).getXpos()] = monsters.get(i).getId();
 		}
 	
 		
@@ -141,25 +132,25 @@ public class Roguelike{
 		
 		for(int i = 0; i < monsters.size(); i++){
 	
-			board[monsters.get(i).getYpos()][monsters.get(i).getXpos()] = monsters.get(i).getId();
+			level.board[monsters.get(i).getYpos()][monsters.get(i).getXpos()] = monsters.get(i).getId();
 
 		}
 		
 		//**Debug**
 		horizontalLine();
 		System.out.print("   x = ");
-		for(int x = 0; x < board[0].length; x++){
+		for(int x = 0; x < level.board[0].length; x++){
 			System.out.print(""+Utility.expand(x,2)+"|");
 		}
 		Console.log();
-		for(int y = 0; y < board.length; y++)
+		for(int y = 0; y < level.board.length; y++)
 		{
 			System.out.print("y = "+Utility.expand(y,2)+")");
-			for(int x = 0; x < board[0].length; x++){
-				if(debugBoard[y][x] != 'k'){
-					System.out.print("["+debugBoard[y][x]+"]");
+			for(int x = 0; x < level.board[0].length; x++){
+				if(level.debugBoard[y][x] != 'k'){
+					System.out.print("["+level.debugBoard[y][x]+"]");
 				}else{
-					System.out.print("["+board[y][x]+"]");
+					System.out.print("["+level.board[y][x]+"]");
 				}
 				
 			}
@@ -184,11 +175,11 @@ public class Roguelike{
 		
 		clear();
 		
-		board[Main.player.getYpos()][Main.player.getXpos()] = Main.player.getId();
-		parties[Main.player.getYpos()][Main.player.getXpos()] = Main.player.getSrcIndex(); 
+		level.board[Main.player.getYpos()][Main.player.getXpos()] = Main.player.getId();
+		level.parties[Main.player.getYpos()][Main.player.getXpos()] = Main.player.getSrcIndex(); 
 		
 		for(int i = 0; i < monsters.size(); i++){
-			board[monsters.get(i).getYpos()][monsters.get(i).getXpos()] = monsters.get(i).getId();			
+			level.board[monsters.get(i).getYpos()][monsters.get(i).getXpos()] = monsters.get(i).getId();			
 		}
 		
 		render();
@@ -222,7 +213,7 @@ public class Roguelike{
 	}
 	
 	private static boolean isClear(int y, int x){
-		if(x < 0 || y < 0 || x >= board[0].length || y >= board.length){
+		if(x < 0 || y < 0 || x >= level.board[0].length || y >= level.board.length){
 			return false;
 		}else{
 			if(noClip){
@@ -231,7 +222,7 @@ public class Roguelike{
 			if(Main.player.getXpos() == x && Main.player.getYpos() == y){
 				return false;
 			}
-			if(walls[y][x] == 1){
+			if(level.walls[y][x] == 1){
 				return false;
 			}
 			for(int i = 0; i < monsters.size(); i++){
@@ -246,25 +237,25 @@ public class Roguelike{
 
 	private static void clear(){
 		
-		for(int y = 0; y < board.length; y++)
+		for(int y = 0; y < level.board.length; y++)
 		{
-			for(int x = 0; x < board[0].length; x++){
-				dynamicElements[y][x] = 0;
-				parties[y][x] = null;
-				if(walls[y][x] < textures.length){
-					board[y][x] = textures[walls[y][x]];
+			for(int x = 0; x < level.board[0].length; x++){
+				level.dynamicElements[y][x] = 0;
+				level.parties[y][x] = null;
+				if(level.walls[y][x] < textures.length){
+					level.board[y][x] = textures[level.walls[y][x]];
 				}else{
-					board[y][x] = Integer.toString(walls[y][x]).charAt(0);
+					level.board[y][x] = Integer.toString(level.walls[y][x]).charAt(0);
 				}
 			}
 		}		
 	}
 	private static void clearWalls(){
 		
-		for(int y = 0; y < walls.length; y++){
-			for(int x = 0; x < walls[0].length; x++){
-				walls[y][x] = 0;
-				debugBoard[y][x] = 'k';
+		for(int y = 0; y < level.walls.length; y++){
+			for(int x = 0; x < level.walls[0].length; x++){
+				level.walls[y][x] = 0;
+				level.debugBoard[y][x] = 'k';
 				
 			}
 		}
@@ -278,240 +269,25 @@ public class Roguelike{
 		for(int r = 0; r < 9; r++){ //r = room number
 			Console.log(1,"room "+r);
 			rooms.add(new Room());
-			/*int collideN = 0;
-			int collideS = 0;
-			int collideE = 0;
-			int collideW = 0;
-			boolean Continue;
-			boolean Randomize;
-			int itt = 0;
-			rooms.add(new Room());
-			Main.debug.DrawRooms(null);
-			int x = 0;
-			int y = 0;
-			boolean hasMovedNorth = false;
-			boolean hasMovedSouth = false;
-			boolean hasMovedEast = false;
-			boolean hasMovedWest = false;
-			Console.log(1,"");
-			do{
-				collideS = 0;
-				collideN = 0;
-				collideE = 0;
-				collideW = 0;
-				Continue = false;
-				Randomize = false;
-				Console.log("collide");
-				Console.log("itt = "+itt);
-				Console.log("x = "+rooms.get(r).xpos+", y = "+rooms.get(r).ypos+", w = "+rooms.get(r).w+", h ="+rooms.get(r).h);
-				Main.debug.DrawRooms(new ArrayList<Integer>());
-				for(y = rooms.get(r).ypos - 1; y < rooms.get(r).ypos + rooms.get(r).h + 1; y++){	
-					for(x = rooms.get(r).xpos - 1; x < rooms.get(r).xpos + rooms.get(r).w + 1; x++){
-						
-						if(y < walls.length && y >= 0 && x < walls[y].length && x >= 0){
-							if(walls[y][x] == 1 || walls[y][x] == 2){
-								if(y < rooms.get(r).ypos + (rooms.get(r).h + 1)/2){
-									//Console.log("walls["+y+"]["+x+"] = "+Integer.toString(walls[y][x])+": collideN");
-									collideN++;
-								
-								}else{
-									//Console.log("walls["+y+"]["+x+"] = "+Integer.toString(walls[y][x])+": collideS");
-									collideS++;
-									
-								}
-								if(x < rooms.get(r).xpos + (rooms.get(r).w + 1)/2){
-									//Console.log("walls["+y+"]["+x+"] = "+Integer.toString(walls[y][x])+": collideW");
-									collideW++;
-									
-								}else{
-									//Console.log("walls["+y+"]["+x+"] = "+Integer.toString(walls[y][x])+": collideE");
-									collideE++;
-								}
-							}
-						}else{
-							//Console.log("x or y margin off the map ("+x+", "+y+")");
-							//ignore margins when at edge of map
-						}
-					}
-					
-				}
-				
-				Console.log("collideN = "+collideN+"; collideS = "+collideS+"; collideE = "+collideE+"; collideW = "+collideW);
-				
-				int max = Utility.findMaxValue(new int[]{collideN, collideS, collideE, collideW});
-				
-				if(max == 0){
-					//done
-					Console.log("room clear");
-					break;
-				}else if(max == collideN /&& collideS == 0/ && !hasMovedNorth){
-					Console.log("Move South");
-					if(!(rooms.get(r).ypos+rooms.get(r).h+1 >= walls.length)){
-				 		rooms.get(r).ypos++;
-						hasMovedSouth = true;
-						Continue = true;
-					}else{
-						Console.log("can't move south - off map");
-						Randomize = true;
-					}
-				}else if(max == collideS && !hasMovedSouth){
-					Console.log("Move North");
-					if(!(rooms.get(r).ypos <= 0)){
-						rooms.get(r).ypos--;
-						hasMovedNorth = true;
-						Continue = true;
-					}else{
-						Console.log("can't move north - off map");
-						Randomize = true;
-					}
-					
-				}else if(max == collideE && !hasMovedEast){
-					Console.log("Move West");
-					if(!(rooms.get(r).xpos <= 0)){
-						rooms.get(r).xpos--;
-						hasMovedWest = true;
-						Continue = true;
-					}else{
-						Console.log("can't move west - off map");
-						Randomize = true;
-					}
-					
-				}else if(max == collideW && !hasMovedWest){
-					Console.log("Move East");
-					if(!(rooms.get(r).xpos+rooms.get(r).w+1 >= walls[0].length)){
-						rooms.get(r).xpos++;
-						hasMovedEast = true;
-						Continue = true;
-					}else{
-						Console.log("can't move east - off map");
-						Randomize = true;
-					}
-				}else{
-					Console.log("multiple overlap - randomize");
-					Randomize = true;
-				}
 			
-				if(Randomize == true){
-					if(itt < 5){
-						Console.log("Randomize room");
-						rooms.set(r, new Room());
-						hasMovedNorth = false;
-						hasMovedSouth = false;
-						hasMovedEast = false;
-						hasMovedWest = false;
-						Continue = true;
-					}else{
-						rooms.remove(rooms.size()-1);
-						break;
-					}
-				}
-				
-			}while(Continue == true);
-			*/
-			Main.debug.setWeights(overlapWeight);
+			Main.debug.setWeights(null);
 			Main.debug.DrawRooms(new ArrayList<Integer>());
 			Console.log(-1,"");
 		}
 		
 		
-		ArrayList<int[]> vectors = new ArrayList<int[]>();
-		
-		Console.log(1,"Move Rooms");
-		int itt = 0;
-		do{
-			setWeights();
-			Main.debug.setWeights(overlapWeight);
-			Console.log(1,"itt "+itt);
-			for(int r = 0; r < rooms.size(); r++) {
-				int[][] overlap = new int[2][2];
-					//[[NW,NE],
-					// [SW,SE]]
-				int vectorNE;
-				int vectorSE;
-				int vectorE;
-				int vectorS;
-				float halfWidth = rooms.get(r).w >> 1;
-				float halfHeight = rooms.get(r).h >> 1;
-				for(int x = 0; x < rooms.get(r).w; x++){
-					for(int y = 0; y < rooms.get(r).h; y++){
-						if((float)x != halfWidth && (float)y != halfHeight)
-							overlap[((y < halfHeight) ? 0 : 1)][((x < halfWidth) ? 0 : 1)] += overlapWeight[y+rooms.get(r).ypos][x+rooms.get(r).xpos] - 1;
-					}
-				}
-				vectorNE = (overlap[1][0] == overlap[0][1]) ? 0 : (int) (Math.max(Math.round(Math.sqrt((float) overlap[1][0]) - Math.sqrt((float) overlap[0][1])), ((overlap[1][0] - overlap[0][1] > 0) ? 1 : -1)));
-				vectorSE = (overlap[0][0] == overlap[1][1]) ? 0 : (int) (Math.max(Math.round(Math.sqrt((float) overlap[0][0]) - Math.sqrt((float) overlap[1][1])), ((overlap[0][0] - overlap[1][1] > 0) ? 1 : -1)));
-					Console.log(1,"Vectors for rooms.get(r)@("+rooms.get(r).xpos+","+rooms.get(r).ypos+")");
-					Console.log("["+Integer.toString(overlap[0][0])+","+Integer.toString(overlap[0][1])+"]");
-					Console.log("["+Integer.toString(overlap[1][0])+","+Integer.toString(overlap[1][1])+"]");
-					Console.log("vectorNE = "+vectorNE);
-					Console.log("vectorSE = "+vectorSE);
-				vectorE = (int) Math.round(0.7f*(vectorSE + vectorNE));
-				vectorS = (int) Math.round(0.7f*(vectorSE - vectorNE));
-					Console.log("vectorE = "+vectorE);
-					Console.log("vectorS = "+vectorS);
-					Console.log(-1,"");
-				if(r >= vectors.size()){
-					vectors.add(new int[]{vectorE,vectorS});
-				}else{
-					vectors.set(r, new int[]{vectorE,vectorS});
-				}
-				Main.debug.DrawVector(new Point((int) Math.round((rooms.get(r).xpos + (float) rooms.get(r).w/2)*Debug.scale), (int) Math.round((rooms.get(r).ypos + (float) rooms.get(r).h/2)*Debug.scale)), vectorE*Debug.scale, 0);
-				Main.debug.DrawVector(new Point((int) Math.round((rooms.get(r).xpos + (float) rooms.get(r).w/2)*Debug.scale), (int) Math.round((rooms.get(r).ypos + (float) rooms.get(r).h/2)*Debug.scale)), vectorS*Debug.scale, 1.5);
-				Main.debug.DrawVector(new Point((int) Math.round((rooms.get(r).xpos + (float) rooms.get(r).w/2)*Debug.scale), (int) Math.round((rooms.get(r).ypos + (float) rooms.get(r).h/2)*Debug.scale)), vectorNE*Debug.scale, 0.25);
-				Main.debug.DrawVector(new Point((int) Math.round((rooms.get(r).xpos + (float) rooms.get(r).w/2)*Debug.scale), (int) Math.round((rooms.get(r).ypos + (float) rooms.get(r).h/2)*Debug.scale)), vectorSE*Debug.scale, 1.75);
-			}
-			Main.debug.update();
-			Main.debug.clearVectors();
-			for(int r = 0; r < rooms.size(); r++){
-				rooms.get(r).xpos += vectors.get(r)[0];
-				if(rooms.get(r).xpos < 0)
-					rooms.get(r).xpos = 0;
-				else if(rooms.get(r).xpos + rooms.get(r).w > Roguelike.map.width)
-					rooms.get(r).xpos = Roguelike.map.width - rooms.get(r).w;
-				
-				rooms.get(r).ypos += vectors.get(r)[1];
-				if(rooms.get(r).ypos < 0)
-					rooms.get(r).ypos = 0;
-				else if(rooms.get(r).ypos + rooms.get(r).h > Roguelike.map.height)
-					rooms.get(r).ypos = Roguelike.map.height - rooms.get(r).h;
-			}
-			Console.log(-1,"");
-			itt++;
-		}while(itt < 10);
-		Console.log(-1,"");
-		
-		Main.debug.DrawRooms(new ArrayList<Integer>());
-		
-		for (int r = 0; r < rooms.size(); r++) {
-			rooms:{
-			Console.log(1,"room "+r+" ("+rooms.get(r).xpos+","+rooms.get(r).ypos+")");
-			for(int x = 0; x < rooms.get(r).w; x++){
-				for(int y = 0; y < rooms.get(r).h; y++){
-					if(overlapWeight[y+rooms.get(r).ypos][x+rooms.get(r).xpos] > 1){
-						Console.log(-1,"removing room "+r);
-						rooms.remove(r);
-						r--;
-						setWeights();
-						Main.debug.DrawRooms(new ArrayList<Integer>());
-						break rooms;
-					}
-				}
-			}
-			rooms.get(r).construct();
-			Console.log(-1,"");
-			}
-		}
+		DungeonBuilder.collideRooms(rooms, level.size.width, level.size.height);
 		
 		for(int r = 0; r < rooms.size(); r++){
 			for(int i = 0; i < rooms.get(r).roomWalls.size(); i++){
 				if(rooms.get(r).roomWalls.get(i).x >= 0){
-					walls[rooms.get(r).roomWalls.get(i).y][rooms.get(r).roomWalls.get(i).x] = 1;
+					level.walls[rooms.get(r).roomWalls.get(i).y][rooms.get(r).roomWalls.get(i).x] = 1;
 				}
 			}
 			for(int y1 = rooms.get(r).ypos; y1 < rooms.get(r).ypos + rooms.get(r).h; y1++){	
 				for(int x1 = rooms.get(r).xpos; x1 < rooms.get(r).xpos + rooms.get(r).w; x1++){
-					if(walls[y1][x1] == 0){
-						walls[y1][x1] = 2;
+					if(level.walls[y1][x1] == 0){
+						level.walls[y1][x1] = 2;
 					}
 				}
 				
@@ -519,26 +295,8 @@ public class Roguelike{
 		}
 		Console.log(-1, "");
 	}
-	private static void setWeights(){
-		for(int y = 0; y < walls.length; y++){
-			for(int x = 0; x < walls[0].length; x++){
-				overlapWeight[y][x] = 0;				
-			}
-		}
-		for(int r = 0; r < rooms.size(); r++){
-			for(int x = -1; x <= rooms.get(r).w; x++){
-				if(x+rooms.get(r).xpos >= 0 && x+rooms.get(r).xpos < map.width){
-					for(int y = -1; y <= rooms.get(r).h; y++){
-						if(y+rooms.get(r).ypos >= 0 && y+rooms.get(r).ypos < map.height){
-							overlapWeight[y+rooms.get(r).ypos][x+rooms.get(r).xpos] += 1;
-						}
-					}
-				}
-			}
-		}
-	}
 	
-	//TODO fix doors on top of doors ( x < 0 )
+	
 	private static void setPaths(){
 		List<Point> doors = new ArrayList<Point>();
 		for(int i = 0; i < rooms.size(); i++){
@@ -546,7 +304,7 @@ public class Roguelike{
 				doors.add(rooms.get(i).roomDoors.get(e));
 			}
 		}
-		Pathing.setPaths(walls, doors);		
+		Pathing.setPaths(level.walls, doors);		
 	}
 
 	public static class viewPort{
@@ -565,26 +323,26 @@ public class Roguelike{
 	
 	public static void render(){
 		
-		if(Main.player.getXpos()-viewPort.size.width >= 0 && (viewPort.size.width)+1+Main.player.getXpos() < map.width){
+		if(Main.player.getXpos()-viewPort.size.width >= 0 && (viewPort.size.width)+1+Main.player.getXpos() < level.size.width){
 			viewPort.position.x = Main.player.getXpos()-viewPort.size.width;
-		}else if(!(Main.player.getXpos()-viewPort.size.width >= 0) && !((viewPort.size.width)+1+Main.player.getXpos() < map.width)){
+		}else if(!(Main.player.getXpos()-viewPort.size.width >= 0) && !((viewPort.size.width)+1+Main.player.getXpos() < level.size.width)){
 			Console.log("view port too large");
-			viewPort.size.width = map.width;
+			viewPort.size.width = level.size.width;
 		}else if (Main.player.getXpos()-viewPort.size.width < 0){
 			viewPort.position.x = 0;
-		}else if((viewPort.size.width)+1+Main.player.getXpos() >= map.width){
-			viewPort.position.x = map.width-((viewPort.size.width*2)+1);
+		}else if((viewPort.size.width)+1+Main.player.getXpos() >= level.size.width){
+			viewPort.position.x = level.size.width-((viewPort.size.width*2)+1);
 		}
 		
-		if(Main.player.getYpos()-viewPort.size.height >= 0 && (viewPort.size.height)+1+Main.player.getYpos() < map.height){
+		if(Main.player.getYpos()-viewPort.size.height >= 0 && (viewPort.size.height)+1+Main.player.getYpos() < level.size.height){
 			viewPort.position.y = Main.player.getYpos()-viewPort.size.height;
-		}else if(!(Main.player.getYpos()-viewPort.size.height >= 0) && !((viewPort.size.height)+1+Main.player.getYpos() < map.height)){
+		}else if(!(Main.player.getYpos()-viewPort.size.height >= 0) && !((viewPort.size.height)+1+Main.player.getYpos() < level.size.height)){
 			Console.log("view port too large");
-			viewPort.size.height = map.height;
+			viewPort.size.height = level.size.height;
 		}else if (Main.player.getYpos()-viewPort.size.height < 0){
 			viewPort.position.y = 0;
-		}else if((viewPort.size.height)+1+Main.player.getYpos() >= map.height){
-			viewPort.position.y = map.height-((viewPort.size.height*2)+1);
+		}else if((viewPort.size.height)+1+Main.player.getYpos() >= level.size.height){
+			viewPort.position.y = level.size.height-((viewPort.size.height*2)+1);
 		}
 		
 		mainBoard.repaint();
@@ -689,18 +447,18 @@ class tilePanel extends JPanel{
 					opacity = 1;
 				opacity = opacity*-1+1;
 				if(opacity > 0){
-					Roguelike.visibleArea[y+Roguelike.viewPort.position.y][x+Roguelike.viewPort.position.x] = true;
+					Roguelike.level.visibleArea[y+Roguelike.viewPort.position.y][x+Roguelike.viewPort.position.x] = true;
 				}
 				
-				if(Roguelike.visibleArea[y+Roguelike.viewPort.position.y][x+Roguelike.viewPort.position.x] && opacity == 0){
+				if(Roguelike.level.visibleArea[y+Roguelike.viewPort.position.y][x+Roguelike.viewPort.position.x] && opacity == 0){
 					isFog = true;
 				}
 				
-				opacity = (float) Math.max(opacity, ((Roguelike.visibleArea[y+Roguelike.viewPort.position.y][x+Roguelike.viewPort.position.x]) ? 0.18 : 0));
+				opacity = (float) Math.max(opacity, ((Roguelike.level.visibleArea[y+Roguelike.viewPort.position.y][x+Roguelike.viewPort.position.x]) ? 0.18 : 0));
 				
 				((Graphics2D) g).setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, opacity));	
 				
-				g.drawImage(images[Roguelike.walls[y+Roguelike.viewPort.position.y][x+Roguelike.viewPort.position.x]],
+				g.drawImage(images[Roguelike.level.walls[y+Roguelike.viewPort.position.y][x+Roguelike.viewPort.position.x]],
 						x*Roguelike.tileSize.width, 
 						y*Roguelike.tileSize.height,
 						Roguelike.tileSize.width,
@@ -716,16 +474,16 @@ class tilePanel extends JPanel{
 							Roguelike.tileSize.height,
 							this);
 				}else{
-					if(Roguelike.dynamicElements[y+Roguelike.viewPort.position.y][x+Roguelike.viewPort.position.x] != 0){
-						g.drawImage(images2[Roguelike.dynamicElements[y+Roguelike.viewPort.position.y][x+Roguelike.viewPort.position.x]-1],
+					if(Roguelike.level.dynamicElements[y+Roguelike.viewPort.position.y][x+Roguelike.viewPort.position.x] != 0){
+						g.drawImage(images2[Roguelike.level.dynamicElements[y+Roguelike.viewPort.position.y][x+Roguelike.viewPort.position.x]-1],
 								x*Roguelike.tileSize.width, 
 								y*Roguelike.tileSize.height,
 								Roguelike.tileSize.width,
 								Roguelike.tileSize.height,
 								this);
 					}
-					if(Roguelike.parties[y+Roguelike.viewPort.position.y][x+Roguelike.viewPort.position.x] != null){
-						g.drawImage(Main.images.get(Roguelike.parties[y+Roguelike.viewPort.position.y][x+Roguelike.viewPort.position.x]),
+					if(Roguelike.level.parties[y+Roguelike.viewPort.position.y][x+Roguelike.viewPort.position.x] != null){
+						g.drawImage(Main.images.get(Roguelike.level.parties[y+Roguelike.viewPort.position.y][x+Roguelike.viewPort.position.x]),
 								x*Roguelike.tileSize.width, 
 								y*Roguelike.tileSize.height,
 								Roguelike.tileSize.width,
@@ -733,22 +491,6 @@ class tilePanel extends JPanel{
 								this);
 					}
 				}
-				/*
-				((Graphics2D) g).setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.6f));	
-				
-				g.setColor(Color.WHITE);
-				g.drawString(Utility.crop(opacity,3),
-						x*Roguelike.tileSize.width, 
-						(y+1)*Roguelike.tileSize.height);
-				g.drawString(Boolean.toString(Roguelike.visibleArea[y+Roguelike.viewPort.position.y][x+Roguelike.viewPort.position.x]),
-						x*Roguelike.tileSize.width, 
-						y*Roguelike.tileSize.height+10);*/
-				/*
-				g.setColor(Color.WHITE);
-				g.drawString(""+Roguelike.walls[y+Roguelike.viewPort.position.y][x+Roguelike.viewPort.position.x],
-						x*Roguelike.tileSize.width, 
-						(y+1)*Roguelike.tileSize.height);
-				*/
 			}
 			
 		}

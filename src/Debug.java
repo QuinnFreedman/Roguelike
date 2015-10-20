@@ -24,17 +24,21 @@ public class Debug extends JFrame implements KeyListener{
 	private JPanel Display;
 	public static long startTime;
 	public static long lastTime;
-	private boolean debugOn = false;
+	private boolean debugOn = true;
+	protected static Level level;
 	
 	public static int scale = 16;
 
-	Debug(){
+	Debug(Level l){
 		if(debugOn){
-			SwingUtilities.invokeLater(new Runnable() {
-	            public void run() {
+			level = l;
+			//SwingUtilities.invokeLater(new Runnable() {
+	        //    public void run() {
 	                createAndShowGUI();
-	            }
-	        });
+	        //    }
+	        //});
+			startTime = System.nanoTime();
+			lastTime = startTime;
 		}
 	}
 	private void createAndShowGUI() {
@@ -52,7 +56,7 @@ public class Debug extends JFrame implements KeyListener{
 		window.add(parent);
 		
 		draw = new debugPanel();
-		draw.setSize((int) (Roguelike.map.width*scale+20*Main.scale),(int) (Roguelike.map.height*scale+20*Main.scale));
+		draw.setSize((int) (level.size.width*scale+20*Main.scale),(int) (level.size.height*scale+20*Main.scale));
 		draw.setVisible(false);
 		parent.add(draw);
 		
@@ -78,7 +82,7 @@ public class Debug extends JFrame implements KeyListener{
 		draw.lines.clear();
 		draw.connectedRooms.clear();
 		draw.vectors.clear();
-		draw.weights = new int[Roguelike.map.height][Roguelike.map.width];
+		draw.weights = new int[level.size.height][level.size.width];
 		for(int[] array : draw.weights){
 			for(int i = 0; i < array.length; i++){
 				array[i] = 0;
@@ -108,6 +112,14 @@ public class Debug extends JFrame implements KeyListener{
 	public void setWeights(int[][] overlapWeight){
 		if(overlapWeight != null && debugOn){
 			draw.weights = overlapWeight;
+		}
+	}
+	public void initializeWeights(int width, int height){
+		draw.weights = new int[height][width];
+		for(int y = 0; y < height; y++){
+			for(int x = 0; x < width; x++){
+				draw.weights[y][x] = 0;
+			}
 		}
 	}
 	public void DrawLine(Point p1, Point p2){
@@ -211,11 +223,11 @@ class debugPanel extends JPanel{
         super.paintComponent(g);
         //((Graphics2D) g).scale(Main.scale,Main.scale);
         g.setColor(Color.lightGray);
-        for(int x = 0; x < Roguelike.map.width; x++){
-        	g.drawLine(x*scale, 0, x*scale, Roguelike.map.height*scale);
+        for(int x = 0; x < Debug.level.size.width; x++){
+        	g.drawLine(x*scale, 0, x*scale, Debug.level.size.height*scale);
         }
-        for(int y = 0; y < Roguelike.map.height; y++){
-        	g.drawLine(0, y*scale, Roguelike.map.width*scale, y*scale);
+        for(int y = 0; y < Debug.level.size.height; y++){
+        	g.drawLine(0, y*scale, Debug.level.size.width*scale, y*scale);
         }
         
         for(int i = 0; i < Roguelike.rooms.size(); i++){
@@ -237,8 +249,8 @@ class debugPanel extends JPanel{
         	g.setColor(Color.BLACK);
         	g.drawRect(r.xpos*scale, r.ypos*scale, r.w*scale, r.h*scale);
         	g.drawString("("+r.xpos+", "+r.ypos+")", r.xpos*scale, r.ypos*scale+10);
-        	for(int y = 0; y < Roguelike.map.height; y++){
-    			for(int x = 0; x < Roguelike.map.width; x++){
+        	for(int y = 0; y < Debug.level.size.height; y++){
+    			for(int x = 0; x < Debug.level.size.width; x++){
     				if(weights[y][x] == 0)
     					g.setColor(Color.lightGray);
     				else
@@ -270,13 +282,13 @@ class debugPanel extends JPanel{
         	g.drawLine(p[0].x*scale+(scale/2), p[0].y*scale+(scale/2), p[1].x*scale+(scale/2), p[1].y*scale+(scale/2));
         }
         if(done){
-	        for(int y = 0; y < Roguelike.map.height; y++){
-				for(int x = 0; x < Roguelike.map.width; x++){
-					if(Roguelike.walls[y][x] == 0){
+	        for(int y = 0; y < Debug.level.size.height; y++){
+				for(int x = 0; x < Debug.level.size.width; x++){
+					if(Debug.level.walls[y][x] == 0){
 						g.setColor(Color.magenta);
-					}else if(Roguelike.walls[y][x] == 1){
+					}else if(Debug.level.walls[y][x] == 1){
 						g.setColor(Color.blue);
-					}else if(Roguelike.walls[y][x] == 2 || Roguelike.walls[y][x] == 3){
+					}else if(Debug.level.walls[y][x] == 2 || Debug.level.walls[y][x] == 3){
 						g.setColor(Color.gray);
 					}else{
 						g.setColor(Color.black);
@@ -314,7 +326,7 @@ class debugDisplay extends JPanel{
 	}
 	@Override
 	public Dimension getPreferredSize() {
-		return new Dimension((int) (Roguelike.map.width*Debug.scale*Main.scale),(int) (Roguelike.map.height*Debug.scale*Main.scale));
-		//return new Dimension(484,324);
+		return new Dimension((int) (Debug.level.size.width*Debug.scale*Main.scale),
+				(int) (Debug.level.size.height*Debug.scale*Main.scale));
     }
 }

@@ -57,10 +57,6 @@ public class Main extends JFrame implements KeyListener
 	
 	public static void main(String[] args)
 	{
-		debug = new Debug();
-
-		Debug.startTime = System.nanoTime();
-		Debug.lastTime = Debug.startTime;
 		
 		try {
 			GraphicsEnvironment ge = 
@@ -83,7 +79,7 @@ public class Main extends JFrame implements KeyListener
 	
 	//**********GUI Constructor***********
 	public Main()
-	{		
+	{
 		window = new JFrame();
 		//window.setSize(555*scale,325*scale);//440,320
 		//window.setResizable(false);
@@ -114,6 +110,8 @@ public class Main extends JFrame implements KeyListener
 		new Inventory();
 		
 		window.setVisible(true);
+		
+		WorldBuilder.buildWorld();
 		
 	}
 	

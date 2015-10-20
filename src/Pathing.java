@@ -13,14 +13,14 @@ public class Pathing{
 		for(int i = 0; i < doors.size(); i++){
 			Node z = new Node(doors.get(i).x,doors.get(i).y);
 			doorNodes.add(z);
-			Roguelike.walls[z.y][z.x] = (i+"").charAt(0);
+			walls[z.y][z.x] = (i+"").charAt(0);
 		}*/
 		
 		paths.clear();
 		
-		Node[][] nodes = new Node[Roguelike.board.length][Roguelike.board[0].length];
-		for(int y = 0; y < Roguelike.board.length; y++){
-			for(int x = 0; x < Roguelike.board[0].length; x++){
+		Node[][] nodes = new Node[walls.length][walls[0].length];
+		for(int y = 0; y < walls.length; y++){
+			for(int x = 0; x < walls[0].length; x++){
 				if(walls[y][x] == 0){
 					nodes[y][x] = new Node(x,y,true);
 				}else{
@@ -50,10 +50,10 @@ public class Pathing{
 					Console.log("startpoint = "+startPoint);
 					Point endpoint = new Point();
 					int distanceToDoor = -1;
-					if(Roguelike.debugBoard[startPoint.y][startPoint.x] == 'X'){
-						Roguelike.debugBoard[startPoint.y][startPoint.x] = '!';
+					if(Roguelike.level.debugBoard[startPoint.y][startPoint.x] == 'X'){
+						Roguelike.level.debugBoard[startPoint.y][startPoint.x] = '!';
 					}else{
-						Roguelike.debugBoard[startPoint.y][startPoint.x] = 'O';
+						Roguelike.level.debugBoard[startPoint.y][startPoint.x] = 'O';
 					}
 					int saveE = 0;
 					for(int e = 0; e < Roguelike.rooms.size(); e++){
@@ -92,10 +92,10 @@ public class Pathing{
 					Main.debug.DrawRooms(connected);
 					connectedDoors.add(endpoint);
 					Console.log("endpoint = "+endpoint);
-					if(Roguelike.debugBoard[endpoint.y][endpoint.x] == 'O'){
-						Roguelike.debugBoard[endpoint.y][endpoint.x] = 'N';
+					if(Roguelike.level.debugBoard[endpoint.y][endpoint.x] == 'O'){
+						Roguelike.level.debugBoard[endpoint.y][endpoint.x] = 'N';
 					}else{
-						Roguelike.debugBoard[endpoint.y][endpoint.x] = 'X';
+						Roguelike.level.debugBoard[endpoint.y][endpoint.x] = 'X';
 					}
 					
 					// A* door to closest door
@@ -135,7 +135,7 @@ public class Pathing{
 									nodes[localY][localX].g = closedList.get(g).g+1; // set move cost //TODO null pointer exception
 									nodes[localY][localX].h = distanceBetween(nodes[localY][localX],nodes[endpoint.y][endpoint.x]);
 									nodes[localY][localX].f = nodes[localY][localX].g + nodes[localY][localX].h;
-									//Roguelike.debugBoard[localY][localX] = (nodes[localY][localX].h+"").charAt((nodes[localY][localX].h+"").length()-1;
+									//Roguelike.level.debugBoard[localY][localX] = (nodes[localY][localX].h+"").charAt((nodes[localY][localX].h+"").length()-1;
 									//(nodes[localY][localX].h+"").charAt((nodes[localY][localX].h+"").length()-1
 									
 									openList.add(nodes[localY][localX]); // add new node to open list
@@ -165,7 +165,7 @@ public class Pathing{
 						
 						if(openList.size() > 0){
 							for(Node test : openList){
-								if(lowestF == null || test.f < lowestF.f || (test.f == lowestF.f && Roguelike.walls[test.y][test.x] == 3)){
+								if(lowestF == null || test.f < lowestF.f || (test.f == lowestF.f && walls[test.y][test.x] == 3)){
 									//prefer nodes that have already been used, if two are equal, to reduce parallel paths
 									//TODO /don't/ change to random chance with preference toward used nodes, to allow some wide pathing
 									// to eliminate all unnecessary pathing, you could loop through all paths, check if borders 3 empty squares, or if borders > 2 other path tiles, soem of which each border > 2 other tiles
@@ -175,7 +175,7 @@ public class Pathing{
 							}
 						}else{
 							Console.log("ERROR: PATH NOT FOUND");
-							Roguelike.debugBoard[startPoint.y][startPoint.x] = '!';
+							Roguelike.level.debugBoard[startPoint.y][startPoint.x] = '!';
 							done = true;
 						}
 						
@@ -204,7 +204,7 @@ public class Pathing{
 							while(currentTile.parent != null){
 								//Console.log(currentTile.parent.toString()+": "+currentTile.parent.stringify());
 								paths.get(paths.size()-1).add(currentTile);
-								Roguelike.walls[currentTile.y][currentTile.x] = 3;
+								walls[currentTile.y][currentTile.x] = 3;
 								currentTile = currentTile.parent;
 							}
 							Main.debug.paintLists(new ArrayList<Node>(), new ArrayList<Node>());
@@ -244,29 +244,29 @@ public class Pathing{
 						localX++;
 					}
 					if(localX >= 0 && localY >= 0 && localY < nodes.length && localX < nodes[0].length){
-						if(Roguelike.walls[localY][localX] == 0){
-							Roguelike.walls[localY][localX] = 1;
+						if(walls[localY][localX] == 0){
+							walls[localY][localX] = 1;
 						}
 					}
 				}
 			}
 		}
 		for(Point door : Roguelike.rooms.get(0).roomDoors){
-			if(Roguelike.walls[door.y][door.x+1] == 0){
+			if(walls[door.y][door.x+1] == 0){
 				//TODO remove door
-				Roguelike.walls[door.y][door.x] = 1;
+				walls[door.y][door.x] = 1;
 				continue;
-			}else if(Roguelike.walls[door.y][door.x-1] == 0){
+			}else if(walls[door.y][door.x-1] == 0){
 				//TODO remove door
-				Roguelike.walls[door.y][door.x] = 1;
+				walls[door.y][door.x] = 1;
 				continue;
-			}else if(Roguelike.walls[door.y+1][door.x] == 0){
+			}else if(walls[door.y+1][door.x] == 0){
 				//TODO remove door
-				Roguelike.walls[door.y][door.x] = 1;
+				walls[door.y][door.x] = 1;
 				continue;
-			}else if(Roguelike.walls[door.y-1][door.x] == 0){
+			}else if(walls[door.y-1][door.x] == 0){
 				//TODO remove door
-				Roguelike.walls[door.y][door.x] = 1;
+				walls[door.y][door.x] = 1;
 				continue;
 			}
 		}
