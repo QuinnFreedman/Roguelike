@@ -1,4 +1,5 @@
 import java.awt.Polygon;
+import java.awt.Rectangle;
 import java.util.ArrayList;
 
 public abstract class WorldBuilder {
@@ -24,20 +25,61 @@ public abstract class WorldBuilder {
 		float step = (float) (2*Math.PI / samples);
 		
 		for(int i = 1; i < samples; i++){
-			int xpos = (int) (Math.cos(step * i)*(r + 20*Math.sin(4 * step * i - 1.5) + top[i]) + WORLD_WIDTH/2);
-			int ypos = (int) (Math.sin(step * i)*(r+ 20*Math.sin(4 * step * i - 1.5) + top[i]) + WORLD_HEIGHT/2);
+			int xpos = (int) (Math.cos(step * i)*(r + 40*Math.sin(4 * step * i - 1.5) + top[i]) + WORLD_WIDTH/2);
+			int ypos = (int) (Math.sin(step * i)*(r + 40*Math.sin(4 * step * i - 1.5) + top[i]) + WORLD_HEIGHT/2);
 			points.add(new java.awt.Point(xpos, ypos));
 		}
 		
-		debug.setOutline(makePolygon(points));
+		Polygon outline = makePolygon(points);
+		debug.setOutline(outline);
 		
 		//SET TILES
 		
 		for(int y = 0; y < WORLD_HEIGHT; y++){
 			for(int x = 0; x < WORLD_WIDTH; x++){
-				//TODO
+				if(outline.contains(x, y))
+					world[y][x] = 1;
+				else
+					world[y][x] = 0;
 			}
 		}
+		
+		debug.setWorld(world);
+		
+		Rectangle bounds = new Rectangle(0, 0, WORLD_WIDTH, WORLD_HEIGHT);
+		
+		while(!outline.contains(bounds)){
+			bounds.x += 10;
+			bounds.y += 10;
+			bounds.width -= 20;
+			bounds.height -= 20;
+		}
+		
+		while(outline.contains(bounds)){
+			bounds.x -= 10;
+			bounds.width += 10;
+		}
+		bounds.x += 10;
+		bounds.width -= 10;
+		
+		while(outline.contains(bounds)){
+			bounds.y -= 10;
+			bounds.height += 10;
+		}
+		bounds.y += 10;
+		bounds.height -= 10;
+		
+		while(outline.contains(bounds)){
+			bounds.height += 10;
+		}
+		bounds.height -= 10;
+		
+		while(outline.contains(bounds)){
+			bounds.width += 10;
+		}
+		bounds.width -= 10;
+		
+		debug.setWorldBounds(bounds);
 	}
 	static Polygon makePolygon(ArrayList<java.awt.Point> points){
 		int len = points.size();

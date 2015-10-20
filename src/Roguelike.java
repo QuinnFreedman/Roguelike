@@ -50,6 +50,7 @@ public class Roguelike{
 	//private static JLabel sidebar;
 	
 	public static boolean toggleFog = true;
+	public static boolean toggleShadow = true;
 	
 	public static boolean noClip = false;
 	
@@ -423,6 +424,11 @@ public class Roguelike{
         	Roguelike.toggleFog = !Roguelike.toggleFog;
         	Roguelike.mainBoard.repaint();
         }
+        else if(c == KeyEvent.VK_L){
+        	System.out.println(toggleShadow);
+        	Roguelike.toggleShadow = !Roguelike.toggleShadow;
+        	Roguelike.mainBoard.repaint();
+        }
 		
 
         //***************DEBUG END*******************
@@ -467,7 +473,7 @@ class tilePanel extends JPanel{
 				
 				opacity = (float) Math.max(opacity, ((Roguelike.level.visibleArea[y+Roguelike.viewPort.position.y][x+Roguelike.viewPort.position.x]) ? 0.18 : 0));
 				
-				if(Roguelike.toggleFog)
+				if(Roguelike.toggleShadow)
 					((Graphics2D) g).setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, opacity));
 				else
 					((Graphics2D) g).setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1));

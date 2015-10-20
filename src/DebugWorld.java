@@ -1,10 +1,10 @@
+import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Polygon;
+import java.awt.Rectangle;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-import java.awt.event.MouseListener;
-import java.util.ArrayList;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -12,6 +12,8 @@ import javax.swing.JPanel;
 @SuppressWarnings("serial")
 public class DebugWorld extends JFrame implements KeyListener{
 	private CanvasPanel canvas;
+	private static Rectangle worldBounds;
+	protected static int[][] world;
 	public DebugWorld(){
 		super();
 		
@@ -37,6 +39,22 @@ public class DebugWorld extends JFrame implements KeyListener{
 			((Graphics2D) g).scale(.5,.5);
 			if(outline != null)
 				g.drawPolygon(outline);
+			if(world != null){
+				/*
+				for(int y = 0; y < world.length; y++){
+					for(int x = 0; x < world[0].length; x++){
+						if(world[y][x] == 0)
+							g.setColor(Color.BLUE);
+						else if(world[y][x] == 1)
+							g.setColor(Color.GREEN);
+						g.fillRect(x, y, x+1, y+1);
+					}
+				}*/
+			}
+			if(worldBounds != null){
+				g.setColor(Color.BLACK);
+				g.drawRect(worldBounds.x, worldBounds.y, worldBounds.width, worldBounds.height);
+			}
 		}
 	}
 
@@ -50,13 +68,22 @@ public class DebugWorld extends JFrame implements KeyListener{
 
 	@Override
 	public void keyReleased(KeyEvent e) {
-		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
 	public void keyTyped(KeyEvent e) {
-		// TODO Auto-generated method stub
+		
+	}
+
+	public void setWorld(int[][] array) {
+		world = array;
+		canvas.repaint();
+		
+	}
+
+	public void setWorldBounds(Rectangle bounds) {
+		worldBounds = bounds;
 		
 	}
 }
