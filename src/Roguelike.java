@@ -49,6 +49,8 @@ public class Roguelike{
 	
 	//private static JLabel sidebar;
 	
+	public static boolean toggleFog = true;
+	
 	public static boolean noClip = false;
 	
 	Roguelike(){
@@ -379,8 +381,10 @@ public class Roguelike{
 	    	Main.window.dispatchEvent(new WindowEvent(Main.window, WindowEvent.WINDOW_CLOSING));
         } else if(c==KeyEvent.VK_1){
         	noClip  = noClip ? false : true;
-        } else if(c==KeyEvent.VK_C){
-        	//*************DEBUG ONLY***************************
+        }
+		
+    	//*************DEBUG ONLY***************************
+		else if(c==KeyEvent.VK_C){
         	JFileChooser fc = new JFileChooser();
             fc.setCurrentDirectory(new File(System.getProperty("user.home")+"/workspace/Roguelike/assets"));
         	fc.setFileFilter(new FileNameExtensionFilter("gif","gif"));
@@ -409,13 +413,19 @@ public class Roguelike{
             	        Main.player.setSrcIndex(fileName);
             	        Main.roguelike.revalidate();
             	        Main.roguelike.repaint();
+            	        Roguelike.mainBoard.repaint();
             	    } catch (Exception e) {
             	        e.printStackTrace();
             	    }
                 }
             }
-            //***************DEBUG END*******************
+        }else if(c == KeyEvent.VK_F){
+        	Roguelike.toggleFog = !Roguelike.toggleFog;
+        	Roguelike.mainBoard.repaint();
         }
+		
+
+        //***************DEBUG END*******************
 		
 	}
 }
@@ -451,12 +461,16 @@ class tilePanel extends JPanel{
 				}
 				
 				if(Roguelike.level.visibleArea[y+Roguelike.viewPort.position.y][x+Roguelike.viewPort.position.x] && opacity == 0){
-					isFog = true;
+					if(Roguelike.toggleFog)
+						isFog = true;
 				}
 				
 				opacity = (float) Math.max(opacity, ((Roguelike.level.visibleArea[y+Roguelike.viewPort.position.y][x+Roguelike.viewPort.position.x]) ? 0.18 : 0));
 				
-				((Graphics2D) g).setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, opacity));	
+				if(Roguelike.toggleFog)
+					((Graphics2D) g).setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, opacity));
+				else
+					((Graphics2D) g).setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1));
 				
 				g.drawImage(images[Roguelike.level.walls[y+Roguelike.viewPort.position.y][x+Roguelike.viewPort.position.x]],
 						x*Roguelike.tileSize.width, 

@@ -24,7 +24,7 @@ public class Debug extends JFrame implements KeyListener{
 	private JPanel Display;
 	public static long startTime;
 	public static long lastTime;
-	private boolean debugOn = true;
+	private boolean debugOn = false;
 	protected static Level level;
 	
 	public static int scale = 16;
