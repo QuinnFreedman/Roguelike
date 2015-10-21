@@ -107,8 +107,6 @@ public class Main extends JFrame implements KeyListener
 		
 		window.setVisible(true);
 		
-		WorldBuilder.buildWorld();
-		
 	}
 	
 	public static void display(String j){

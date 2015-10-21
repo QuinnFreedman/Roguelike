@@ -10,6 +10,7 @@ public class Room
 	public int doors;
 	List<Point> roomWalls;
 	List<Point> roomDoors;
+	private Level level;
 	
 	private static int randomBtwnBiased(int min, int max)
 	{
@@ -53,8 +54,8 @@ public class Room
 				){
 					corner = true;
 					Console.log("!!corner = true!!");
-				}else if(roomWalls.get(k).y == Roguelike.level.board.length - 1 ||
-						roomWalls.get(k).x == Roguelike.level.board[0].length - 1 ||
+				}else if(roomWalls.get(k).y == level.size.height - 1 ||
+						roomWalls.get(k).x == level.size.width - 1 ||
 						roomWalls.get(k).y == 0 ||
 						roomWalls.get(k).x == 0
 				){
@@ -72,23 +73,26 @@ public class Room
 		}
 		
 	}
-	Room(){
+	Room(Level level){
 		Console.log("New Room");
 		h = randomBtwn(4, 7);
 		w = randomBtwn(4, 7);
-		xpos = randomBtwn(0, Roguelike.level.size.width-this.w);
-		ypos = randomBtwn(0, Roguelike.level.size.height-this.h);
+		xpos = randomBtwn(0, level.size.width-this.w);
+		ypos = randomBtwn(0, level.size.height-this.h);
+		this.level = level;
 		//construct();
 	}
 	Room(int h, int w, int x, int y){
-		Console.log("New Room");
+		//Console.log("New Room");
 		this.h = h;
 		this.w = w;
 		this.xpos = x;
 		this.ypos = y;
-		construct();
+		//construct();
 	}
 	public void construct(){
+		if(this.level == null)
+			return;
 		Console.log(1,"Construct Room");
 		doors = randomBtwnBiased(1,3);
 		Console.log("Number of doors = "+doors);
@@ -102,5 +106,10 @@ public class Room
 			
 		setDoors();
 		Console.log(-1, "Room Done");
+	}
+	
+	@Override
+	public String toString() {
+		return super.toString()+"[x = "+xpos+" y = "+ypos+" w = "+w+" h = "+h+"]";
 	}
 }

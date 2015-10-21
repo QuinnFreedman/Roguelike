@@ -80,10 +80,7 @@ public class Roguelike{
 	}
 	
 	public static void init(int s){
-		level = new Level(30,20);
-		Main.debug = new Debug(level);
 		
-		Main.debug.clear();
 		Menu.setupMenu();
 		Main.display(Main.MENU);
 		
@@ -92,7 +89,13 @@ public class Roguelike{
 		Main.seed = s;
 		Main.generator = new Random(s);
 		Console.log("seed = "+s);
-
+		
+		WorldBuilder.buildWorld();
+		
+		level = new Level(30,20);
+		Main.debug = new Debug(level);
+		
+		Main.debug.clear();
 				
 		clearWalls();
 		Console.benchmark();
@@ -271,7 +274,7 @@ public class Roguelike{
 		Main.debug.DrawRooms(new ArrayList<Integer>());
 		for(int r = 0; r < 9; r++){ //r = room number
 			Console.log(1,"room "+r);
-			rooms.add(new Room());
+			rooms.add(new Room(level));
 			
 			Main.debug.setWeights(null);
 			Main.debug.DrawRooms(new ArrayList<Integer>());
@@ -307,7 +310,7 @@ public class Roguelike{
 				doors.add(rooms.get(i).roomDoors.get(e));
 			}
 		}
-		Pathing.setPaths(level.walls, doors);		
+		Pathing.setPaths(level.walls, doors);
 	}
 
 	public static class viewPort{

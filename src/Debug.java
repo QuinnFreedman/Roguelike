@@ -274,6 +274,7 @@ class debugPanel extends JPanel{
 	        }
         	g.setColor(Color.GREEN);
 	        for(Point node : closedList){
+	        	if(node != null)
 	        	g.fillRect(node.x*scale,node.y*scale,scale,scale);
 	        }
         }

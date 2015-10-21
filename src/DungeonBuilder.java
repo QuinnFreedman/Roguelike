@@ -4,13 +4,15 @@ public abstract class DungeonBuilder{
 	
 	public static void collideRooms(ArrayList<Room> rooms, int width, int height){
 		int[][] overlapWeights = new int[height][width];
+		Console.log("height = "+height+" width = "+width);
 		ArrayList<int[]> vectors = new ArrayList<int[]>();
 		
 		Console.log(1,"Move Rooms");
 		int itt = 0;
 		do{
 			setWeights(overlapWeights, rooms);
-			Main.debug.setWeights(overlapWeights);
+			if(Main.debug != null)
+				Main.debug.setWeights(overlapWeights);
 			Console.log(1,"itt "+itt);
 			for(int r = 0; r < rooms.size(); r++) {
 				int[][] overlap = new int[2][2];
@@ -45,32 +47,37 @@ public abstract class DungeonBuilder{
 				}else{
 					vectors.set(r, new int[]{vectorE,vectorS});
 				}
-				Main.debug.DrawVector(new Point((int) Math.round((rooms.get(r).xpos + (float) rooms.get(r).w/2)*Debug.scale), (int) Math.round((rooms.get(r).ypos + (float) rooms.get(r).h/2)*Debug.scale)), vectorE*Debug.scale, 0);
-				Main.debug.DrawVector(new Point((int) Math.round((rooms.get(r).xpos + (float) rooms.get(r).w/2)*Debug.scale), (int) Math.round((rooms.get(r).ypos + (float) rooms.get(r).h/2)*Debug.scale)), vectorS*Debug.scale, 1.5);
-				Main.debug.DrawVector(new Point((int) Math.round((rooms.get(r).xpos + (float) rooms.get(r).w/2)*Debug.scale), (int) Math.round((rooms.get(r).ypos + (float) rooms.get(r).h/2)*Debug.scale)), vectorNE*Debug.scale, 0.25);
-				Main.debug.DrawVector(new Point((int) Math.round((rooms.get(r).xpos + (float) rooms.get(r).w/2)*Debug.scale), (int) Math.round((rooms.get(r).ypos + (float) rooms.get(r).h/2)*Debug.scale)), vectorSE*Debug.scale, 1.75);
+				if(Main.debug != null){
+					Main.debug.DrawVector(new Point((int) Math.round((rooms.get(r).xpos + (float) rooms.get(r).w/2)*Debug.scale), (int) Math.round((rooms.get(r).ypos + (float) rooms.get(r).h/2)*Debug.scale)), vectorE*Debug.scale, 0);
+					Main.debug.DrawVector(new Point((int) Math.round((rooms.get(r).xpos + (float) rooms.get(r).w/2)*Debug.scale), (int) Math.round((rooms.get(r).ypos + (float) rooms.get(r).h/2)*Debug.scale)), vectorS*Debug.scale, 1.5);
+					Main.debug.DrawVector(new Point((int) Math.round((rooms.get(r).xpos + (float) rooms.get(r).w/2)*Debug.scale), (int) Math.round((rooms.get(r).ypos + (float) rooms.get(r).h/2)*Debug.scale)), vectorNE*Debug.scale, 0.25);
+					Main.debug.DrawVector(new Point((int) Math.round((rooms.get(r).xpos + (float) rooms.get(r).w/2)*Debug.scale), (int) Math.round((rooms.get(r).ypos + (float) rooms.get(r).h/2)*Debug.scale)), vectorSE*Debug.scale, 1.75);
+				}
 			}
-			Main.debug.update();
-			Main.debug.clearVectors();
+			if(Main.debug != null){
+				Main.debug.update();
+				Main.debug.clearVectors();
+			}
 			for(int r = 0; r < rooms.size(); r++){
 				rooms.get(r).xpos += vectors.get(r)[0];
 				if(rooms.get(r).xpos < 0)
 					rooms.get(r).xpos = 0;
-				else if(rooms.get(r).xpos + rooms.get(r).w > Roguelike.level.size.width)
-					rooms.get(r).xpos = Roguelike.level.size.width - rooms.get(r).w;
+				else if(rooms.get(r).xpos + rooms.get(r).w > width)
+					rooms.get(r).xpos = width - rooms.get(r).w;
 				
 				rooms.get(r).ypos += vectors.get(r)[1];
 				if(rooms.get(r).ypos < 0)
 					rooms.get(r).ypos = 0;
-				else if(rooms.get(r).ypos + rooms.get(r).h > Roguelike.level.size.height)
-					rooms.get(r).ypos = Roguelike.level.size.height - rooms.get(r).h;
+				else if(rooms.get(r).ypos + rooms.get(r).h > height)
+					rooms.get(r).ypos = height - rooms.get(r).h;
 			}
 			Console.log(-1,"");
 			itt++;
 		}while(itt < 10);
 		Console.log(-1,"");
 		
-		Main.debug.DrawRooms(new ArrayList<Integer>());
+		if(Main.debug != null)
+			Main.debug.DrawRooms(new ArrayList<Integer>());
 		
 		for (int r = 0; r < rooms.size(); r++) {
 			rooms:{
@@ -82,7 +89,8 @@ public abstract class DungeonBuilder{
 						rooms.remove(r);
 						r--;
 						setWeights(overlapWeights, rooms);
-						Main.debug.DrawRooms(new ArrayList<Integer>());
+						if(Main.debug != null)
+							Main.debug.DrawRooms(new ArrayList<Integer>());
 						break rooms;
 					}
 				}

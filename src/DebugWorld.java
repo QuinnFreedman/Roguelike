@@ -5,6 +5,7 @@ import java.awt.Polygon;
 import java.awt.Rectangle;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.util.ArrayList;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -12,6 +13,7 @@ import javax.swing.JPanel;
 @SuppressWarnings("serial")
 public class DebugWorld extends JFrame implements KeyListener{
 	private CanvasPanel canvas;
+	protected static ArrayList<Room> cities = new ArrayList<Room>();
 	private static Rectangle worldBounds;
 	protected static int[][] world;
 	public DebugWorld(){
@@ -49,13 +51,36 @@ public class DebugWorld extends JFrame implements KeyListener{
 							g.setColor(Color.GREEN);
 						g.fillRect(x, y, x+1, y+1);
 					}
-				}*/
+				}
+				g.setColor(Color.BLACK);*/
 			}
 			if(worldBounds != null){
-				g.setColor(Color.BLACK);
 				g.drawRect(worldBounds.x, worldBounds.y, worldBounds.width, worldBounds.height);
 			}
+			
+			if(cities != null){
+				for(Room r : cities){
+					g.drawRect(r.xpos, r.ypos, r.w, r.h);
+				}
+			}
 		}
+	}
+	
+	public void setWorld(int[][] array) {
+		world = array;
+		canvas.repaint();
+		
+	}
+
+	public void setWorldBounds(Rectangle bounds) {
+		worldBounds = bounds;
+		canvas.repaint();
+		
+	}
+
+	public void setCities(ArrayList<Room> list) {
+		cities = list;
+		canvas.repaint();
 	}
 
 	@Override
@@ -76,14 +101,4 @@ public class DebugWorld extends JFrame implements KeyListener{
 		
 	}
 
-	public void setWorld(int[][] array) {
-		world = array;
-		canvas.repaint();
-		
-	}
-
-	public void setWorldBounds(Rectangle bounds) {
-		worldBounds = bounds;
-		
-	}
 }

@@ -46,6 +46,8 @@ public abstract class WorldBuilder {
 		
 		debug.setWorld(world);
 		
+		//SET BOUNDS
+		
 		Rectangle bounds = new Rectangle(0, 0, WORLD_WIDTH, WORLD_HEIGHT);
 		
 		while(!outline.contains(bounds)){
@@ -80,6 +82,29 @@ public abstract class WorldBuilder {
 		bounds.width -= 10;
 		
 		debug.setWorldBounds(bounds);
+		
+		//Cities
+		
+		ArrayList<Room> cities = new ArrayList<Room>();
+		while(cities.size() < 3){
+			while(cities.size() < 3){
+				int x = (int) (Math.random()*(bounds.width - City.cityPadding.width));
+				int y = (int) (Math.random()*(bounds.height - City.cityPadding.height));
+				cities.add(new Room(City.cityPadding.width, City.cityPadding.height, x, y));
+			}
+			
+			for(Room city : cities){
+				Console.log(city.toString());
+			}
+			
+			DungeonBuilder.collideRooms(cities, bounds.width, bounds.height);
+			
+			for(Room city : cities){
+				city.xpos += bounds.x;
+				city.ypos += bounds.y;
+			}
+			debug.setCities(cities);
+		}
 	}
 	static Polygon makePolygon(ArrayList<java.awt.Point> points){
 		int len = points.size();
