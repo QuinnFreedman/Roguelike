@@ -10,6 +10,11 @@ public abstract class DungeonBuilder{
 		Console.log(1,"Move Rooms");
 		int itt = 0;
 		do{
+			Console.log("height = "+height);
+			Console.log("width = "+width);
+			for(Room room : rooms){
+				Console.log(room.toString());
+			}
 			setWeights(overlapWeights, rooms);
 			if(Main.debug != null)
 				Main.debug.setWeights(overlapWeights);

@@ -87,6 +87,8 @@ public abstract class WorldBuilder {
 		
 		ArrayList<Room> cities = new ArrayList<Room>();
 		while(cities.size() < 3){
+			cities = new ArrayList<Room>();
+			
 			while(cities.size() < 3){
 				int x = (int) (Math.random()*(bounds.width - City.cityPadding.width));
 				int y = (int) (Math.random()*(bounds.height - City.cityPadding.height));
