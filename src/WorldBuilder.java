@@ -12,9 +12,140 @@ public abstract class WorldBuilder {
 	
 	private static DebugWorld debug = new DebugWorld();
 	
+	private static double limit(double x){
+		return -1/(x + 1) + 1;
+	}
+	private static void makeRiver(Point origin, double[][] elevation){
+		Point active = origin;
+		
+		int itt = 0;
+		while(itt < 100){
+			itt++;
+			int x = active.x;
+			int y = active.y;
+			Point[] neighbors = {new Point(y-1, x),
+								 new Point(y, x+1),
+								 new Point(y+1, x),
+								 new Point(y, x-1),
+								 
+								 new Point(y-2, x),
+								 new Point(y, x+2),
+								 new Point(y+2, x),
+								 new Point(y, x-2),
+								 
+								 new Point(y-3, x),
+								 new Point(y, x+3),
+								 new Point(y+3, x),
+								 new Point(y, x-3)};
+			
+			double min = 2;
+			active = null;
+			for(Point p : neighbors){
+				double pVal = elevation[p.y][p.x];
+				//if(pVal == 0)
+				//	continue;
+				if(pVal <= 0.1)
+					return;
+				else if(pVal < min){
+					min = pVal;
+					active = p;
+				}
+			}
+			
+			world[y][x] = -1;
+			
+			if(active == null)
+				return;
+		}
+		
+	}
+	
+	private static void fillRivers(double[][] elevation){
+		for(int y = 1; y < WORLD_HEIGHT - 1; y++){
+			for(int x = 1; x < WORLD_WIDTH - 1; x++){
+				if(elevation[y-1][x] == 0 ||
+						elevation[y][x+1] == 0 || 
+						elevation[y+1][x] == 0 ||
+						elevation[y][x-1] == 0
+					){
+					elevation[y][x] = -1;
+				}
+			}
+		}
+		
+		for(int y = 1; y < WORLD_HEIGHT - 1; y++){
+			for(int x = 1; x < WORLD_WIDTH - 1; x++){
+				if(elevation[y][x] == -1){
+					elevation[y][x] = 0;
+				}
+			}
+		}
+	}
+	
 	public static void buildWorld(){
+		debug.clear();
+		debug.message("Building World");
+		SimplexNoise simplexNoise=new SimplexNoise(200,0.3,(int) (Math.random()*5000));
+
+	    double[][] normalizer = new double[WORLD_HEIGHT][WORLD_WIDTH];
+	    for(int y = 0; y < WORLD_HEIGHT; y++){
+			for(int x = 0; x < WORLD_WIDTH; x++){
+				normalizer[y][x] = limit(1.2*Math.min(
+						(1 - Math.abs(WORLD_WIDTH/2.0 - x)/(WORLD_WIDTH/2.0)),
+		 				(1 - Math.abs(WORLD_HEIGHT/2.0 - y)/(WORLD_HEIGHT/2.0))
+	 				));
+				
+				//assert(normalizer[y][x] > 0 && normalizer[y][x] < 1);
+			}
+		}
+	    
+	    //CALCULATE ELEVATION
+	    double[][] elevation = new double[WORLD_HEIGHT][WORLD_WIDTH];
+	    
+	    for(int y = 0; y < WORLD_HEIGHT; y++){
+			for(int x = 0; x < WORLD_WIDTH; x++){
+				elevation[y][x] = 0.5*(1+simplexNoise.getNoise(x,y)) * normalizer[y][x];
+	            
+	        }
+	    }
+	    
+	    //MAKE RIVERS
+	    /*
+	    ArrayList<Node> river1 = RiverBuilder.getPath(elevation, 
+	    		new Point((int) (WORLD_WIDTH/2f), (int) (WORLD_HEIGHT/2f)), 
+	    		new Point(0,0));
+	    
+	    for(Point p : river1){
+	    	elevation[p.y][p.x] = 0;
+	    }
+	    
+	    fillRivers(elevation);
+	    fillRivers(elevation);
+	    fillRivers(elevation);
+	    */
+	    //FILL MAP
+	    for(int y = 0; y < WORLD_HEIGHT; y++){
+			for(int x = 0; x < WORLD_WIDTH; x++){
+	            double result = elevation[y][x];
+	            if(result > 0.35)
+	            	world[y][x] = 3;
+	            else if(result > 0.25)
+	            	world[y][x] = 3;
+	            else if(result > 0.16)
+	            	world[y][x] = 2;
+	            else if(result > 0.1)
+					world[y][x] = 1;
+				else
+					world[y][x] = 0;
+	        }
+	    }
+
+	    debug.message("Rendering World");
+		debug.setWorld(world);
+		
+		/*
 		//DRAW OUTLINE
-		int samples = 100;
+		int samples = 500;
 		
 		ArrayList<java.awt.Point> points = new ArrayList<java.awt.Point>();
 		
@@ -85,21 +216,17 @@ public abstract class WorldBuilder {
 		
 		//Cities
 		
-		ArrayList<Room> cities = new ArrayList<Room>();
+		ArrayList<Room> cities = new ArrayList<Room>(3);
 		while(cities.size() < 3){
-			cities = new ArrayList<Room>();
+			cities = new ArrayList<Room>(3);
 			
 			while(cities.size() < 3){
-				int x = (int) (Math.random()*(bounds.width - City.cityPadding.width));
-				int y = (int) (Math.random()*(bounds.height - City.cityPadding.height));
-				cities.add(new Room(City.cityPadding.width, City.cityPadding.height, x, y));
+				int x = (int) (Math.random()*(bounds.width - City.citySize.width));
+				int y = (int) (Math.random()*(bounds.height - City.citySize.height));
+				cities.add(new Room(City.citySize.width, City.citySize.height, x, y));
 			}
 			
-			for(Room city : cities){
-				Console.log(city.toString());
-			}
-			
-			DungeonBuilder.collideRooms(cities, bounds.width, bounds.height);
+			DungeonBuilder.collideRooms(cities, bounds.width, bounds.height, 300);
 			
 			for(Room city : cities){
 				city.xpos += bounds.x;
@@ -107,6 +234,10 @@ public abstract class WorldBuilder {
 			}
 			debug.setCities(cities);
 		}
+		
+		//Towns
+		*/
+		
 	}
 	static Polygon makePolygon(ArrayList<java.awt.Point> points){
 		int len = points.size();
@@ -127,13 +258,16 @@ public abstract class WorldBuilder {
 		double offset1 = Math.random()*2*Math.PI;
 		double offset2 = Math.random()*2*Math.PI;
 		double offset3 = Math.random()*2*Math.PI;
+		double offset4 = Math.random()*2*Math.PI;
+		double offset5 = Math.random()*2*Math.PI;
 		for(int i = 0; i < samples; i++){
 			double x = i * step;
 			output[i] = (int) (
 					 (Math.sin(4*x+offset1) * 2*depth)
 					+(Math.sin(4*2*x+offset2) * depth)
 					+(Math.sin(4*5*x+offset3) * depth)
-					+(Math.sin(4*8*x+offset3) * depth)
+					+(Math.sin(4*8*x+offset4) * depth)
+					+(Math.sin(4*20*x+offset5) * depth/3)
 					- 3*depth);
 		}
 		return output;

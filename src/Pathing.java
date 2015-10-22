@@ -132,7 +132,7 @@ public class Pathing{
 								if(!openList.contains(nodes[localY][localX]) && !closedList.contains(nodes[localY][localX]) && nodes[localY][localX].isPassable == true){
 									
 									nodes[localY][localX].parent = closedList.get(g); // parent current node to new node
-									nodes[localY][localX].g = closedList.get(g).g+1; // set move cost //TODO null pointer exception
+									nodes[localY][localX].g = closedList.get(g).g+1; // set move cost
 									nodes[localY][localX].h = distanceBetween(nodes[localY][localX],nodes[endpoint.y][endpoint.x]);
 									nodes[localY][localX].f = nodes[localY][localX].g + nodes[localY][localX].h;
 									//Roguelike.level.debugBoard[localY][localX] = (nodes[localY][localX].h+"").charAt((nodes[localY][localX].h+"").length()-1;
@@ -292,6 +292,8 @@ public class Pathing{
 }
 
 class Node extends Point{
+	float gf; //float move cost
+	float ff; //float f
 	int h;//heuristic
 	int g;//movement cost
 	int f;//g+h

@@ -1,28 +1,46 @@
+import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Polygon;
 import java.awt.Rectangle;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 
+import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
 @SuppressWarnings("serial")
 public class DebugWorld extends JFrame implements KeyListener{
 	private CanvasPanel canvas;
-	protected static ArrayList<Room> cities = new ArrayList<Room>();
-	private static Rectangle worldBounds;
-	protected static int[][] world;
+	protected ArrayList<Room> cities = new ArrayList<Room>();
+	private Rectangle worldBounds;
+	protected int[][] world;
+	protected String message;
 	public DebugWorld(){
 		super();
 		
+		JPanel holder = new JPanel();
+		holder.setLayout(new BorderLayout());
+		this.getContentPane().add(holder);
+		
 		canvas = new CanvasPanel();
-		this.getContentPane().add(canvas);
-
-		this.setSize(1000, 600);
+		holder.add(canvas, BorderLayout.CENTER);
+		
+		JPanel control = new JPanel();
+		JButton generate = new JButton("generate");
+		generate.addActionListener(e -> {
+			WorldBuilder.buildWorld();
+		});
+		control.add(generate);
+		holder.add(control, BorderLayout.EAST);
+		
+		this.pack();
 		this.setVisible(true);
 		this.addKeyListener(this);
 	}
@@ -32,27 +50,63 @@ public class DebugWorld extends JFrame implements KeyListener{
 		canvas.repaint();
 	}
 	
-	private static class CanvasPanel extends JPanel{
-		private Polygon outline;
+	public void clear(){
+		this.world = null;
+		canvas.outline = null;
+		this.worldBounds = null;
+		this.cities = new ArrayList<Room>();
+		this.message = null;
+		canvas.repaint();
+	}
+	
+	public void message(String string) {
+		this.message = string;
+		canvas.repaint();
 		
+	}
+	
+	private class CanvasPanel extends JPanel{
+		private Polygon outline;
+		private final Color DARK_GRREEN = new Color(0, 153, 0);
+		private final Color BROWN = new Color(219, 184, 77);
+		@Override
+		public Dimension getPreferredSize() {
+			return new Dimension(500,500);
+		}
 		@Override
 		protected void paintComponent(Graphics g) {
 			super.paintComponent(g);
 			((Graphics2D) g).scale(.5,.5);
 			if(outline != null)
 				g.drawPolygon(outline);
+
+			if(message != null){
+				//g.setFont(new Font(Font.MONOSPACED, 34, Font.PLAIN));
+				g.drawString(message, 500, 500);
+			}
+			
 			if(world != null){
-				/*
+				BufferedImage image = new BufferedImage(world[0].length, world.length, BufferedImage.TYPE_INT_RGB);
+				
 				for(int y = 0; y < world.length; y++){
 					for(int x = 0; x < world[0].length; x++){
-						if(world[y][x] == 0)
-							g.setColor(Color.BLUE);
-						else if(world[y][x] == 1)
-							g.setColor(Color.GREEN);
-						g.fillRect(x, y, x+1, y+1);
+						switch(world[y][x]){
+						case 0:
+							image.setRGB(x, y, Color.BLUE.hashCode());
+							break;
+						case 1:
+							image.setRGB(x, y, Color.GREEN.hashCode());
+							break;
+						case 2:
+							image.setRGB(x, y, DARK_GRREEN.hashCode());
+							break;
+						case 3:
+							image.setRGB(x, y, BROWN.hashCode());
+							break;
+						}
 					}
 				}
-				g.setColor(Color.BLACK);*/
+				g.drawImage(image, 0, 0, this);
 			}
 			if(worldBounds != null){
 				g.drawRect(worldBounds.x, worldBounds.y, worldBounds.width, worldBounds.height);

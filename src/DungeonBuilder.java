@@ -3,6 +3,10 @@ import java.util.ArrayList;
 public abstract class DungeonBuilder{
 	
 	public static void collideRooms(ArrayList<Room> rooms, int width, int height){
+		collideRooms(rooms, width, height, 0);
+	}
+	
+	public static void collideRooms(ArrayList<Room> rooms, int width, int height, int padding){
 		int[][] overlapWeights = new int[height][width];
 		Console.log("height = "+height+" width = "+width);
 		ArrayList<int[]> vectors = new ArrayList<int[]>();
@@ -29,9 +33,12 @@ public abstract class DungeonBuilder{
 				int vectorS;
 				float halfWidth = rooms.get(r).w >> 1;
 				float halfHeight = rooms.get(r).h >> 1;
-				for(int x = 0; x < rooms.get(r).w; x++){
-					for(int y = 0; y < rooms.get(r).h; y++){
-						if((float)x != halfWidth && (float)y != halfHeight)
+				for(int x = 0 - padding; x < rooms.get(r).w + padding; x++){
+					for(int y = 0 - padding; y < rooms.get(r).h + padding; y++){
+						if((float)x != halfWidth && (float)y != halfHeight
+								&& y+rooms.get(r).ypos > 0 && x+rooms.get(r).xpos > 0
+								&& y+rooms.get(r).ypos < height && x+rooms.get(r).xpos < width
+								)
 							overlap[((y < halfHeight) ? 0 : 1)][((x < halfWidth) ? 0 : 1)] += overlapWeights[y+rooms.get(r).ypos][x+rooms.get(r).xpos] - 1;
 					}
 				}
