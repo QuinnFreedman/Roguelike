@@ -26,6 +26,7 @@ public class DebugWorld extends JFrame implements KeyListener{
 	private Rectangle worldBounds;
 	protected int[][] world;
 	protected String message;
+	protected float scaleF = 0.5f;
 	public DebugWorld(){
 		super();
 		
@@ -41,6 +42,7 @@ public class DebugWorld extends JFrame implements KeyListener{
 		
 		JPanel top = new JPanel();
 		JPanel bottom = new JPanel();
+		JPanel scale = new JPanel();
 		
 		JLabel levelsLabel = new JLabel("levels");
 		top.add(levelsLabel);
@@ -52,9 +54,15 @@ public class DebugWorld extends JFrame implements KeyListener{
 		JTextField shape = new JTextField("1.2");
 		bottom.add(shape);
 		
+		JLabel scaleLabel = new JLabel("scale");
+		scale.add(scaleLabel);
+		JTextField scaleField = new JTextField("0.5");
+		scale.add(scaleField);
+		
 
 		control.add(top, BorderLayout.NORTH);
 		control.add(bottom, BorderLayout.CENTER);
+		control.add(scale, BorderLayout.SOUTH);
 		
 		JButton generate = new JButton("generate");
 		generate.addActionListener(e -> {
@@ -67,6 +75,8 @@ public class DebugWorld extends JFrame implements KeyListener{
 				}
 				
 				WorldBuilder.levels = l;
+				
+				scaleF = Float.parseFloat(scaleField.getText());
 				
 				WorldBuilder.buildWorld();
 			}catch(Exception e1){
@@ -113,7 +123,7 @@ public class DebugWorld extends JFrame implements KeyListener{
 		@Override
 		protected void paintComponent(Graphics g) {
 			super.paintComponent(g);
-			((Graphics2D) g).scale(.5,.5);
+			((Graphics2D) g).scale(scaleF,scaleF);
 			if(outline != null)
 				g.drawPolygon(outline);
 
