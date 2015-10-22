@@ -4,6 +4,7 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.LayoutManager;
 import java.awt.Polygon;
 import java.awt.Rectangle;
 import java.awt.event.KeyEvent;
@@ -13,7 +14,10 @@ import java.util.ArrayList;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JTextArea;
+import javax.swing.JTextField;
 
 @SuppressWarnings("serial")
 public class DebugWorld extends JFrame implements KeyListener{
@@ -33,11 +37,44 @@ public class DebugWorld extends JFrame implements KeyListener{
 		holder.add(canvas, BorderLayout.CENTER);
 		
 		JPanel control = new JPanel();
+		control.setLayout(new BorderLayout());
+		
+		JPanel top = new JPanel();
+		JPanel bottom = new JPanel();
+		
+		JLabel levelsLabel = new JLabel("levels");
+		top.add(levelsLabel);
+		JTextField levels = new JTextField(".22, .32, .5, .8");
+		top.add(levels);
+		
+		JLabel shapeLabel = new JLabel("shape");
+		bottom.add(shapeLabel);
+		JTextField shape = new JTextField("1.2");
+		bottom.add(shape);
+		
+
+		control.add(top, BorderLayout.NORTH);
+		control.add(bottom, BorderLayout.CENTER);
+		
 		JButton generate = new JButton("generate");
 		generate.addActionListener(e -> {
-			WorldBuilder.buildWorld();
+			try{
+				WorldBuilder.shape = Float.parseFloat(shape.getText());
+				String[] str = levels.getText().split(", ");
+				float[] l = new float[4];
+				for(int i = 0; i < 4; i++){
+					l[i] = Float.parseFloat(str[i]);
+				}
+				
+				WorldBuilder.levels = l;
+				
+				WorldBuilder.buildWorld();
+			}catch(Exception e1){
+				
+			}
 		});
-		control.add(generate);
+		bottom.add(generate);
+		
 		holder.add(control, BorderLayout.EAST);
 		
 		this.pack();
@@ -102,6 +139,9 @@ public class DebugWorld extends JFrame implements KeyListener{
 							break;
 						case 3:
 							image.setRGB(x, y, BROWN.hashCode());
+							break;
+						case 4:
+							image.setRGB(x, y, Color.WHITE.hashCode());
 							break;
 						}
 					}

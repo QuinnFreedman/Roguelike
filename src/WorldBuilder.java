@@ -12,6 +12,10 @@ public abstract class WorldBuilder {
 	
 	private static DebugWorld debug = new DebugWorld();
 	
+	static float shape = 1.2f;
+	
+	static float[] levels = {.22f, .32f, .5f, .8f};
+	
 	private static double limit(double x){
 		return -1/(x + 1) + 1;
 	}
@@ -90,7 +94,7 @@ public abstract class WorldBuilder {
 	    double[][] normalizer = new double[WORLD_HEIGHT][WORLD_WIDTH];
 	    for(int y = 0; y < WORLD_HEIGHT; y++){
 			for(int x = 0; x < WORLD_WIDTH; x++){
-				normalizer[y][x] = limit(1.2*Math.min(
+				normalizer[y][x] = limit(shape*Math.min(
 						(1 - Math.abs(WORLD_WIDTH/2.0 - x)/(WORLD_WIDTH/2.0)),
 		 				(1 - Math.abs(WORLD_HEIGHT/2.0 - y)/(WORLD_HEIGHT/2.0))
 	 				));
@@ -127,13 +131,14 @@ public abstract class WorldBuilder {
 	    for(int y = 0; y < WORLD_HEIGHT; y++){
 			for(int x = 0; x < WORLD_WIDTH; x++){
 	            double result = elevation[y][x];
-	            if(result > 0.35)
+	            double ratio = limit(shape*1d);
+	            if(result > levels[3]*ratio)
+	            	world[y][x] = 4;
+	            else if(result > levels[2]*ratio)
 	            	world[y][x] = 3;
-	            else if(result > 0.25)
-	            	world[y][x] = 3;
-	            else if(result > 0.16)
+	            else if(result > levels[1]*ratio)
 	            	world[y][x] = 2;
-	            else if(result > 0.1)
+	            else if(result > levels[0]*ratio)
 					world[y][x] = 1;
 				else
 					world[y][x] = 0;
