@@ -3,10 +3,13 @@ import java.util.List;
 
 public abstract class RiverBuilder{
 	
-	public static ArrayList<Node> getPath(double[][] elevation, Point startPoint, Point endPoint){
+	public static ArrayList<Node> getPath(double[][] elevation, Point startPoint, Point endPoint, 
+			boolean branching){
 		List<Node> openList = new ArrayList<Node>();
 		List<Node> closedList = new ArrayList<Node>();
 		ArrayList<Node> path = new ArrayList<Node>();
+		
+		ArrayList<Node> branches = new ArrayList<Node>();
 		
 		path.clear();
 		
@@ -34,6 +37,7 @@ public abstract class RiverBuilder{
 		int g = 0;
 		boolean done = false;
 		int itt = 0;
+		float seaLevel = WorldBuilder.getSeaLevel();
 		do{
 			for(int h = 0; h < 4; h++){
 				int localX = closedList.get(g).x;
@@ -51,7 +55,7 @@ public abstract class RiverBuilder{
 				//if h exists
 				if(localX >= 0 && localY >= 0 && localY < nodes.length && localX < nodes[0].length){
 					
-					float cost = costAtoB(closedList.get(g), nodes[localY][localX], elevation);
+					float cost = costAtoB(nodes[localY][localX], closedList.get(g), elevation);
 					//Console.log(nodes[localY][localX]);
 					//if h is not on open or closed list or is impassable
 					if(!openList.contains(nodes[localY][localX]) && !closedList.contains(nodes[localY][localX])){
@@ -64,7 +68,7 @@ public abstract class RiverBuilder{
 						//(nodes[localY][localX].h+"").charAt((nodes[localY][localX].h+"").length()-1
 						
 						openList.add(nodes[localY][localX]); // add new node to open list
-						
+						path.add(nodes[localY][localX]);
 						
 						
 					}else if(closedList.contains(nodes[localY][localX])){
@@ -73,13 +77,8 @@ public abstract class RiverBuilder{
 							nodes[localY][localX].gf = closedList.get(g).gf + cost;
 							nodes[localY][localX].ff = nodes[localY][localX].gf + nodes[localY][localX].h;
 						}
-					}else if(localY == endPoint.y && localX == endPoint.x || elevation[localY][localX] < 0.2){
-						nodes[endPoint.y][endPoint.x].parent = closedList.get(g);
-						
+					}else if((localY == endPoint.y && localX == endPoint.x) || elevation[localY][localX] < seaLevel){
 						done = true;
-					}else if(itt == 399){
-						Console.log("ERROR: PATH NOT FOUND: itt max");
-						
 					}
 				}
 			}
@@ -88,7 +87,12 @@ public abstract class RiverBuilder{
 			Node lowestF = null;
 			
 			for(Node test : openList){
-				if(lowestF == null || test.ff <= lowestF.ff){
+				if(lowestF == null || test.ff < lowestF.ff-0.1){
+					lowestF = test;
+				}else if(test.ff <= lowestF.ff && Math.random() < 0.5){
+					if(branches.size() < 2 && branching && test.gf < elevation[0].length * .4){
+						branches.add(test);
+					}
 					lowestF = test;
 				}
 			}
@@ -105,11 +109,11 @@ public abstract class RiverBuilder{
 			g++;
 			itt++;
 			
-		}while(done == false);
+		}while(!done);
 		Console.log(-1,"While loop itteration "+itt);
 		
 		//Trace back
-		//if(done == true){
+		if(done == true){
 			Node currentTile = nodes[endPoint.y][endPoint.x].parent;
 			if(currentTile != null){
 				while(currentTile.parent != null){
@@ -119,10 +123,27 @@ public abstract class RiverBuilder{
 				}
 			}else{
 				Console.log("ERROR: 206");
+				return null;
 			}
-		//}
-		Console.log(-1," ");
-		System.err.println("path = "+path.toString());
+		}
+		
+		for(Node branch : branches){
+			Point newEndPoint = new Point();
+			if(endPoint.x == 0 || endPoint.x == elevation[0].length){
+				newEndPoint.x = endPoint.x;
+				newEndPoint.y += Math.min(elevation.length-1, Math.max(0, 
+						(int) ((Math.random() - 0.5)*450)));
+			}else{
+				newEndPoint.y = endPoint.y;
+				newEndPoint.x += Math.min(elevation[0].length-1, Math.max(0, 
+						(int) ((Math.random() - 0.5)*450)));
+			}
+			
+			ArrayList<Node> branchPath = getPath(elevation, branch, newEndPoint, false);
+			if(branchPath != null)
+				path.addAll(branchPath);
+		}
+		
 		return path;
 	}
 
@@ -132,7 +153,7 @@ public abstract class RiverBuilder{
 	}
 	
 	private static float costAtoB(Node a, Node b, double[][] elevation){
-		return 6 + (float) ((elevation[b.y][b.x] - elevation[a.y][a.x])*1000);
+		return 0.2f + (float) ((elevation[b.y][b.x] - elevation[a.y][a.x])*100);//.5,50
 	}
 	
 }

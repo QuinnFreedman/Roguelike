@@ -1,3 +1,4 @@
+import java.awt.Dimension;
 import java.awt.Polygon;
 import java.awt.Rectangle;
 import java.util.ArrayList;
@@ -23,7 +24,7 @@ public abstract class WorldBuilder {
 		Point active = origin;
 		
 		int itt = 0;
-		while(itt < 100){
+		while(itt < 500){
 			itt++;
 			int x = active.x;
 			int y = active.y;
@@ -32,23 +33,24 @@ public abstract class WorldBuilder {
 								 new Point(y+1, x),
 								 new Point(y, x-1),
 								 
-								 new Point(y-2, x),
-								 new Point(y, x+2),
-								 new Point(y+2, x),
-								 new Point(y, x-2),
+								 //new Point(y-2, x),
+								 //new Point(y, x+2),
+								 //new Point(y+2, x),
+								 //new Point(y, x-2),
 								 
-								 new Point(y-3, x),
-								 new Point(y, x+3),
-								 new Point(y+3, x),
-								 new Point(y, x-3)};
+								 //new Point(y-3, x),
+								 //new Point(y, x+3),
+								 //new Point(y+3, x),
+								 //new Point(y, x-3)
+								 };
 			
 			double min = 2;
 			active = null;
 			for(Point p : neighbors){
 				double pVal = elevation[p.y][p.x];
-				//if(pVal == 0)
-				//	continue;
-				if(pVal <= 0.1)
+				if(pVal == -1)
+					continue;
+				if(pVal < levels[0])
 					return;
 				else if(pVal < min){
 					min = pVal;
@@ -67,20 +69,12 @@ public abstract class WorldBuilder {
 	private static void fillRivers(double[][] elevation){
 		for(int y = 1; y < WORLD_HEIGHT - 1; y++){
 			for(int x = 1; x < WORLD_WIDTH - 1; x++){
-				if(elevation[y-1][x] == 0 ||
-						elevation[y][x+1] == 0 || 
-						elevation[y+1][x] == 0 ||
-						elevation[y][x-1] == 0
+				if(world[y-1][x] == -1 ||
+						world[y][x+1] == -1 || 
+						world[y+1][x] == -1 ||
+						world[y][x-1] == -1
 					){
-					elevation[y][x] = -1;
-				}
-			}
-		}
-		
-		for(int y = 1; y < WORLD_HEIGHT - 1; y++){
-			for(int x = 1; x < WORLD_WIDTH - 1; x++){
-				if(elevation[y][x] == -1){
-					elevation[y][x] = 0;
+					world[y][x] = 0;
 				}
 			}
 		}
@@ -105,28 +99,166 @@ public abstract class WorldBuilder {
 	    
 	    //CALCULATE ELEVATION
 	    double[][] elevation = new double[WORLD_HEIGHT][WORLD_WIDTH];
+	    double[][] percipitation = new double[WORLD_HEIGHT][WORLD_WIDTH];
 	    
 	    for(int y = 0; y < WORLD_HEIGHT; y++){
 			for(int x = 0; x < WORLD_WIDTH; x++){
 				elevation[y][x] = 0.5*(1+simplexNoise.getNoise(x,y)) * normalizer[y][x];
-	            
+				percipitation[y][x] = 0.5*(1+simplexNoise.getNoise(x,y));
 	        }
 	    }
 	    
-	    //MAKE RIVERS
-	    /*
-	    ArrayList<Node> river1 = RiverBuilder.getPath(elevation, 
-	    		new Point((int) (WORLD_WIDTH/2f), (int) (WORLD_HEIGHT/2f)), 
-	    		new Point(0,0));
+	    //SET BOUNDS
 	    
-	    for(Point p : river1){
-	    	elevation[p.y][p.x] = 0;
+	    boolean moveNorth = true;
+	    boolean moveSouth = true;
+	    boolean moveEast = true;
+	    boolean moveWest = true;
+	    Rectangle bounds = new Rectangle((int) (WORLD_WIDTH/2f) - 1, 
+	    		(int) (WORLD_HEIGHT/2f) - 1, 2, 2);
+	    while(moveNorth || moveSouth || moveEast || moveWest){
+
+	    	boolean water;
+	    	//NORTH
+	    	if(moveNorth){
+	    		water = false;
+		    	for(int i = bounds.x; i < bounds.x + bounds.width; i++){
+		    		if(i < 0 || i == WORLD_WIDTH || elevation[bounds.y][i] < getSeaLevel()){
+		    			water = true;
+		    			bounds.y += 10;
+		    			bounds.height -= 10;
+		    			break;
+		    		}
+		    	}
+		    	if(water){
+		    		moveNorth = false;
+		    	}else{
+	    			bounds.y -= 10;
+	    			bounds.height += 10;
+	    		}
+	    	}
+	    	
+	    	//WEST
+	    	if(moveWest){
+		    	water = false;
+		    	for(int i = bounds.y; i < bounds.y + bounds.height; i++){
+		    		if(i < 0 || i == WORLD_HEIGHT || elevation[i][bounds.x] < getSeaLevel()){
+		    			water = true;
+		    			bounds.x += 10;
+		    			bounds.width -= 10;
+		    			break;
+		    		}
+		    	}
+		    	if(water){
+		    		moveWest = false;
+		    	}else{
+	    			bounds.x -= 10;
+	    			bounds.width += 10;
+	    		}
+	    	}
+
+	    	//SOUTH
+	    	if(moveSouth){
+	    		water = false;
+		    	for(int i = bounds.x; i < bounds.x + bounds.width; i++){
+		    		if(i < 0 || i == WORLD_WIDTH || 
+		    				elevation[bounds.y+bounds.height][i] < getSeaLevel()){
+		    			water = true;
+		    			bounds.height -= 10;
+		    			break;
+		    		}
+		    	}
+		    	if(water){
+		    		moveSouth = false;
+		    	}else{
+	    			bounds.height += 10;
+	    		}
+	    	}
+	    	
+	    	//EAST
+	    	if(moveEast){
+		    	water = false;
+		    	for(int i = bounds.y; i < bounds.y + bounds.height; i++){
+		    		if(i < 0 || i == WORLD_HEIGHT || 
+		    				elevation[i][bounds.x+bounds.width] < getSeaLevel()){
+		    			water = true;
+		    			bounds.width -= 10;
+		    			break;
+		    		}
+		    	}
+		    	if(water){
+		    		moveEast = false;
+		    	}else{
+	    			bounds.width += 10;
+	    		}
+	    	}
+
 	    }
 	    
-	    fillRivers(elevation);
-	    fillRivers(elevation);
-	    fillRivers(elevation);
-	    */
+	    //CITIES
+	    
+	    ArrayList<Room> cities = new ArrayList<Room>(3);
+		while(cities.size() < 3){
+			cities = new ArrayList<Room>(3);
+			
+			while(cities.size() < 3){
+				int x = (int) (Math.random()*(bounds.width - City.citySize.width));
+				int y = (int) (Math.random()*(bounds.height - City.citySize.height));
+				cities.add(new Room(City.citySize.width, City.citySize.height, x, y));
+			}
+			
+			DungeonBuilder.collideRooms(cities, bounds.width, bounds.height, 300);
+			
+			for(Room city : cities){
+				city.xpos += bounds.x;
+				city.ypos += bounds.y;
+			}
+			debug.setCities(cities);
+		}
+	    
+	    Console.log("bounds = "+bounds);
+	    
+	    debug.setWorldBounds(bounds);
+	    
+	    
+	    
+	    //MAKE RIVERS
+	    
+	    int rivers = 0;
+	    while(rivers < 4){
+	    	rivers++;
+	    	ArrayList<Node> river1 = null;
+	    	do{
+		    	Point startpoint = new Point((int) (WORLD_WIDTH/2f + (Math.random() - 0.5)*50), 
+		    			(int) (WORLD_HEIGHT/2f + (Math.random() - 0.5)*50));
+		    	
+		    	Point endpoint = new Point(0,0);
+		    	int i = (int) Math.floor(Math.random()*4);
+				Console.log(""+i);
+		    	if(i == 0){
+		    		endpoint.y = 0;
+		    		endpoint.x = (int) (Math.random()*WORLD_WIDTH);
+		    	}else if(i == 1){
+		    		endpoint.y = WORLD_HEIGHT - 1;
+		    		endpoint.x = (int) (Math.random()*WORLD_WIDTH);
+		    	}else if(i == 2){
+		    		endpoint.y = (int) (Math.random()*WORLD_HEIGHT);
+		    		endpoint.x = 0;
+		    	}else if(i == 3){
+		    		endpoint.y = (int) (Math.random()*WORLD_HEIGHT);
+		    		endpoint.x = WORLD_WIDTH-1;
+		    	}
+	    	
+			    river1 = RiverBuilder.getPath(elevation, 
+			    		startpoint, endpoint, true);
+	    	}while(river1 == null);
+	    	
+		    for(Point p : river1){
+		    	elevation[p.y][p.x] = 0;
+		    }
+	    }
+	    
+	    
 	    //FILL MAP
 	    for(int y = 0; y < WORLD_HEIGHT; y++){
 			for(int x = 0; x < WORLD_WIDTH; x++){
@@ -145,6 +277,12 @@ public abstract class WorldBuilder {
 	        }
 	    }
 
+	    //makeRiver(new Point((int) (Math.random()*WORLD_WIDTH), (int) (Math.random()*WORLD_HEIGHT)), elevation);
+	    
+//	    fillRivers(elevation);
+//	    fillRivers(elevation);
+//	    fillRivers(elevation);
+	    
 	    debug.message("Rendering World");
 		debug.setWorld(world);
 		
@@ -241,10 +379,10 @@ public abstract class WorldBuilder {
 		}
 		
 		//Towns
-		*/
+		
 		
 	}
-	static Polygon makePolygon(ArrayList<java.awt.Point> points){
+	private static Polygon makePolygon(ArrayList<java.awt.Point> points){
 		int len = points.size();
 		int[] outlineX = new int[len];
 		int[] outlineY = new int[len];
@@ -276,5 +414,9 @@ public abstract class WorldBuilder {
 					- 3*depth);
 		}
 		return output;
+	*/
+	}
+	public static float getSeaLevel() {
+		return (float) (levels[0]*limit(shape*1d));
 	}
 }

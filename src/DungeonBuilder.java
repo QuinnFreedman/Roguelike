@@ -3,7 +3,7 @@ import java.util.ArrayList;
 public abstract class DungeonBuilder{
 	
 	public static void collideRooms(ArrayList<Room> rooms, int width, int height){
-		collideRooms(rooms, width, height, 0);
+		collideRooms(rooms, width, height, 1);
 	}
 	
 	public static void collideRooms(ArrayList<Room> rooms, int width, int height, int padding){
@@ -19,7 +19,7 @@ public abstract class DungeonBuilder{
 			for(Room room : rooms){
 				Console.log(room.toString());
 			}
-			setWeights(overlapWeights, rooms);
+			setWeights(overlapWeights, rooms, padding);
 			if(Main.debug != null)
 				Main.debug.setWeights(overlapWeights);
 			Console.log(1,"itt "+itt);
@@ -33,8 +33,8 @@ public abstract class DungeonBuilder{
 				int vectorS;
 				float halfWidth = rooms.get(r).w >> 1;
 				float halfHeight = rooms.get(r).h >> 1;
-				for(int x = 0 - padding; x < rooms.get(r).w + padding; x++){
-					for(int y = 0 - padding; y < rooms.get(r).h + padding; y++){
+				for(int x = 0; x < rooms.get(r).w; x++){
+					for(int y = 0; y < rooms.get(r).h; y++){
 						if((float)x != halfWidth && (float)y != halfHeight
 								&& y+rooms.get(r).ypos > 0 && x+rooms.get(r).xpos > 0
 								&& y+rooms.get(r).ypos < height && x+rooms.get(r).xpos < width
@@ -100,7 +100,7 @@ public abstract class DungeonBuilder{
 						Console.log(-1,"removing room "+r);
 						rooms.remove(r);
 						r--;
-						setWeights(overlapWeights, rooms);
+						setWeights(overlapWeights, rooms, padding);
 						if(Main.debug != null)
 							Main.debug.DrawRooms(new ArrayList<Integer>());
 						break rooms;
@@ -113,16 +113,16 @@ public abstract class DungeonBuilder{
 		}
 	}
 	
-	private static void setWeights(int[][] overlapWeight, ArrayList<Room> rooms){
+	private static void setWeights(int[][] overlapWeight, ArrayList<Room> rooms, int padding){
 		for(int y = 0; y < overlapWeight.length; y++){
 			for(int x = 0; x < overlapWeight[0].length; x++){
 				overlapWeight[y][x] = 0;				
 			}
 		}
 		for(int r = 0; r < rooms.size(); r++){
-			for(int x = -1; x <= rooms.get(r).w; x++){
+			for(int x = 0-padding; x < rooms.get(r).w + padding; x++){
 				if(x+rooms.get(r).xpos >= 0 && x+rooms.get(r).xpos < overlapWeight[0].length){
-					for(int y = -1; y <= rooms.get(r).h; y++){
+					for(int y = 0-padding; y < rooms.get(r).h + padding; y++){
 						if(y+rooms.get(r).ypos >= 0 && y+rooms.get(r).ypos < overlapWeight.length){
 							overlapWeight[y+rooms.get(r).ypos][x+rooms.get(r).xpos] += 1;
 						}
