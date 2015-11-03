@@ -1,5 +1,4 @@
 import java.awt.Image;
-import java.awt.image.BufferedImage;
 
 public class Aura{
 	public TriggerType trigger;//upkeep,tick,eot,attack,defend,onDealDamage,onRecieveDamage,trigger(called manually)

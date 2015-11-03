@@ -34,6 +34,7 @@ public class Main extends JFrame implements KeyListener
 	public static Combat combat;
 	public static Menu menu;
 	public static JPanel inv;
+	public static JPanel cut_scene;
 	
 	public static double scale = 2;
 	public static boolean isLoading = true;
@@ -44,6 +45,7 @@ public class Main extends JFrame implements KeyListener
 	public static String COMBAT = "COMBAT";
 	public static String MENU = "MENU";
 	public static String INV = "INV";
+	public static String CUT_SCENE = "CUT_SCENE";
 	
 	public static String currentlyDisplayed = MENU;
 	
@@ -105,6 +107,9 @@ public class Main extends JFrame implements KeyListener
 		parent.add(inv, INV);
 		new Inventory();
 		
+		cut_scene = new CutScene.cutSceneDisplayPanel();
+		parent.add(cut_scene, CUT_SCENE);
+		
 		window.setVisible(true);
 		
 	}
@@ -144,10 +149,9 @@ public class Main extends JFrame implements KeyListener
 	
 	public static Image loadGif(final String url) {
 	    try {
-	    	Console.log("Toolkit Loading "+url+".gif");
+	    	Console.log("Toolkit Loading "+url);
 	    	final Toolkit tk = Toolkit.getDefaultToolkit();
-	       // final URL path = new URL("assets\\Background.png");
-	        final Image img = tk.createImage(new File("assets/"+url+".gif").getAbsolutePath());
+	        final Image img = tk.createImage(new File("assets/"+url).getAbsolutePath());
 	        tk.prepareImage(img, -1, -1, null);
 	        return img;
 	    } catch (Exception e) {

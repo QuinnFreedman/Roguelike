@@ -1,5 +1,3 @@
-import java.awt.Dimension;
-import java.awt.Polygon;
 import java.awt.Rectangle;
 import java.util.ArrayList;
 

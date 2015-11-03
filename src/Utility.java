@@ -1,7 +1,6 @@
 import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 

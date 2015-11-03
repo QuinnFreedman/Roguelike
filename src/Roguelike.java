@@ -1,33 +1,22 @@
 import java.awt.AlphaComposite;
 import java.awt.CardLayout;
 import java.awt.Color;
-import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.Image;
-import java.awt.Toolkit;
 import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
 import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
-import java.util.ListIterator;
-import java.util.Map;
 import java.util.Random;
 
 import javax.imageio.ImageIO;
-import javax.swing.BorderFactory;
 import javax.swing.JFileChooser;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.border.Border;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 public class Roguelike{
@@ -53,6 +42,8 @@ public class Roguelike{
 	public static boolean toggleShadow = true;
 	
 	public static boolean noClip = false;
+	
+	static boolean paused = false;
 	
 	Roguelike(){
 		Main.roguelike.setOpaque(true);
@@ -363,6 +354,8 @@ public class Roguelike{
 	}
 
 	public static void handleKeyInput(int c) {
+		if(paused)
+			return;
 		if (c==KeyEvent.VK_UP) {
      		move(Main.player, 3);
      		gameloop();
@@ -385,6 +378,8 @@ public class Roguelike{
 	    	Main.window.dispatchEvent(new WindowEvent(Main.window, WindowEvent.WINDOW_CLOSING));
         } else if(c==KeyEvent.VK_1){
         	noClip  = noClip ? false : true;
+        } else if(c==KeyEvent.VK_2){
+        	CutScene.showCutScene(new CutScene.DRAGON_CUTSCENE_1());
         }
 		
     	//*************DEBUG ONLY***************************

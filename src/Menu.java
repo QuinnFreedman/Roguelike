@@ -1,20 +1,9 @@
 import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
 import java.awt.Image;
-import java.awt.RenderingHints;
 import java.awt.event.KeyEvent;
-import java.awt.image.BufferedImage;
-import java.io.IOException;
-import java.util.List;
 
-import javax.imageio.ImageIO;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 public class Menu extends JPanel{
@@ -106,7 +95,7 @@ public class Menu extends JPanel{
 	}
 	Menu(){
 		this.setBackground(Color.black);
-		backgroundImage = Main.loadGif("Background_Default");
+		backgroundImage = Main.loadGif("Background_Default.gif");
 		//backgroundImage = Main.loadImage("Background");
 		setupMenu();
 	}
