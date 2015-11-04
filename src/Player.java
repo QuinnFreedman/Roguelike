@@ -13,7 +13,7 @@ public class Player extends Party
 		}else if(this.allies.size() < 4){
 			boolean retry = false;
 			int r = (int) Math.round(Math.random());
-			charecter.position.y = Utility.percentChance(charecter.clas.percentFront) ? 1 : 0;
+			charecter.position.y = 0;//TODO Utility.percentChance(charecter.clas.percentFront) ? 1 : 0;
 			do{
 				if(!spotTaken(r,charecter.position.y)){
 					charecter.position.x = r;

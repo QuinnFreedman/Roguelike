@@ -161,7 +161,7 @@ public class Charecter{
 		abilities.add(new Ability.Throw(this,0));
 		if(this.clas instanceof Mage){
 			abilities.add(new Ability.Zap(this, 0));
-			this.items.SECONDAIRY = new Weapon.WoodenStaff();
+			this.items.SECONDAIRY = new Weapon.WoodenSword();
 		}else if(this.clas instanceof Assassin)
 			abilities.add(new Ability.PoisonStrike(this, 0));
 		else if(this.clas instanceof Knight)

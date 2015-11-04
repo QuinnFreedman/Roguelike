@@ -173,9 +173,9 @@ public class Combat extends JPanel{
 				output += "Choose Weapon\n";
 				if(active.items.PRIMAIRY.getWeapon() != null){
 					if(currentWeapon == 0){
-						output += "*"+active.items.PRIMAIRY.getWeapon().id+"* ";
+						output += "*"+active.items.PRIMAIRY.getWeapon().id+"* \n";
 					}else{
-						output += " "+active.items.PRIMAIRY.getWeapon().id+" ";
+						output += " "+active.items.PRIMAIRY.getWeapon().id+" \n";
 					}
 				}
 				if(active.items.SECONDAIRY != null && active.items.SECONDAIRY.getWeapon() != null){
@@ -410,6 +410,7 @@ public class Combat extends JPanel{
 	    return -1;
 	}
 	private static List<Charecter> getInRangeCharecters(Charecter caster, Ability a, int range){
+		Console.log("get in range characters: Position = "+caster.position.y+" Range = "+range);
 		List<Charecter> inRangeCharecters = new ArrayList<Charecter>();
 		ArrayList<Charecter> target = (caster.parent == Main.player) ? opponent.allies : Main.player.allies;
 		if(a.targetType == "ALLY" && caster.parent == Main.player){

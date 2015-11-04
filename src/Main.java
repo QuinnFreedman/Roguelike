@@ -78,6 +78,8 @@ public class Main extends JFrame implements KeyListener
 	//**********GUI Constructor***********
 	public Main()
 	{
+		
+		new roomBuilder();
 		window = new JFrame();
 		//window.setSize(555*scale,325*scale);//440,320
 		//window.setResizable(false);
