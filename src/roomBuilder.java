@@ -3,6 +3,8 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Graphics;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.image.BufferedImage;
@@ -66,6 +68,7 @@ public class roomBuilder extends JFrame{
 		dictionairyViewer.add(new JScrollPane(table), BorderLayout.CENTER);
 		table.setLayout(new BoxLayout(table, BoxLayout.Y_AXIS));
 		
+		
 		JPanel buttons = new JPanel();
 		//buttons.setLayout(new BoxLayout(buttons, BoxLayout.Y_AXIS));
 		dictionairyViewer.add(buttons, BorderLayout.AFTER_LAST_LINE);
@@ -120,6 +123,32 @@ public class roomBuilder extends JFrame{
 				}
 	        	File file = fc.getSelectedFile();
 		        addRow(file.getPath().split("assets")[1], i, true);
+	        } 
+		});
+		JButton delete = new JButton("Delete");
+		buttons.add(delete);
+		delete.addActionListener(e -> {
+			if(active_image != 0){
+				map.remove(active_image);
+				table.removeAll();
+				table.revalidate();
+				table.repaint();
+				for(Entry<Integer, String> i : map.entrySet()){
+					addRow(i.getValue(), i.getKey(), false);
+				}
+				try {
+					FileWriter fstream = new FileWriter(dictionairy);
+					BufferedWriter dictionairy_out = new BufferedWriter(fstream);
+					for(Entry<Integer, String> entry : map.entrySet()){
+						dictionairy_out.write(entry.getKey()+","+entry.getValue());
+						dictionairy_out.newLine();
+					}
+					dictionairy_out.close();
+					
+				} catch (IOException e1) {
+					error(e1);
+					e1.printStackTrace();
+				}
 	        } 
 		});
 		
