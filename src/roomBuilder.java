@@ -3,10 +3,9 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Graphics;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
 import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -39,7 +38,7 @@ public class roomBuilder extends JFrame{
 	File dictionairy;
 	HashMap<Integer, String> map = new HashMap<Integer, String>();
 	private int active_image = 0;
-	private int scale = 2;
+	private int scale = (int) Main.scale;
 	private int[][] data = new int[10][10];
 	private int[][] dynamic = new int[10][10];
 	JFrame THIS = this;
@@ -258,20 +257,24 @@ public class roomBuilder extends JFrame{
 						
 						try {
 							String s = map.get(data[y][x]);
-							if(s != null){
+							if(s != null && !s.equals("delete")){
 								URL resource = this.getClass().getResource(s);
 								if(resource != null){
 									BufferedImage src = ImageIO.read(resource);
 									g.drawImage(src, x*32*scale, y*32*scale, 32*scale, 32*scale, this);
+								}else{
+									error("could not load image "+s);
 								}
 							}
 							
 							s = map.get(dynamic[y][x]);
-							if(s != null){
+							if(s != null && !s.equals("delete")){
 								URL resource = this.getClass().getResource(s);
 								if(resource != null){
 									BufferedImage src = ImageIO.read(resource);
 									g.drawImage(src, x*32*scale, y*32*scale, 32*scale, 32*scale, this);
+								}else{
+									error("could not load image "+s);
 								}
 							}
 							
@@ -308,6 +311,24 @@ public class roomBuilder extends JFrame{
 			public void mouseEntered(MouseEvent e) {}
 			@Override
 			public void mouseClicked(MouseEvent e) {}
+		});
+		canvas.addMouseMotionListener(new MouseMotionListener() {
+			
+			@Override
+			public void mouseMoved(MouseEvent e) {}
+			
+			@Override
+			public void mouseDragged(MouseEvent e) {
+				java.awt.Point p = e.getPoint();
+				if(p.y < data.length*32*scale && p.x < data[0].length*32*scale){
+					
+					if(data[(int) (p.y/(32f*scale))][(int) (p.x/(32f*scale))] != active_image){
+						data[(int) (p.y/(32f*scale))][(int) (p.x/(32f*scale))] = active_image;
+						canvas.repaint();
+					}
+				}
+				
+			}
 		});
 		canvasHolder.add(canvas, BorderLayout.CENTER);
 		
