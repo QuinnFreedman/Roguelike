@@ -20,3 +20,4 @@
 -15,\Barrel.png
 -16,\Table 1.png
 -17,\Chest.png
+-18,\Corpse Stick.png
