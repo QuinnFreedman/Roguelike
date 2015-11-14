@@ -24,3 +24,7 @@
 -19,\Dais.png
 -20,\Table 2.png
 -21,\Table.png
+-22,\Bookshelf.png
+-23,\Bookshelf 1.png
+-24,\Bookshelf 2.png
+-25,\Bookshelf 3.png
