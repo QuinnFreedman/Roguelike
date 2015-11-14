@@ -21,3 +21,6 @@
 -16,\Table 1.png
 -17,\Chest.png
 -18,\Corpse Stick.png
+-19,\Dais.png
+-20,\Table 2.png
+-21,\Table.png
