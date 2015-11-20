@@ -7,6 +7,26 @@
 3,\floorTiles\2.png
 -4,\floorTiles\Unused\Chapel Corner 4.png
 -5,\floorTiles\Unused\Chapel Wall Horizontal.png
+<<<<<<< HEAD
 4,\floorTiles\wooden_floor.png
 -6,\floorTiles\Unused\Chapel Wall Vertical.png
 -7,\floorTiles\Unused\Chapel Door.png
+=======
+4,\floorTiles\Unused\Chapel Door.png
+-6,\floorTiles\Unused\Chapel Wall Vertical.png
+-7,\Corpse Ona Stick.png
+-8,\floorTiles\Unused\Chapel Window.png
+-9,\Pew Left 1.png
+-10,\Pew Left 2.png
+-11,\Pew Left 3.png
+-12,\Pew Right 1.png
+-13,\Pew Right 2.png
+-14,\Pew Right 3.png
+-15,\Barrel.png
+-16,\Table 1.png
+-17,\Chest.png
+-18,\Corpse Stick.png
+-19,\Dais.png
+-20,\Table 2.png
+-21,\Table.png
+>>>>>>> 01accd1c28eb41ba8b6f4c4235537f518f4be0e7
