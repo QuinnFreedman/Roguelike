@@ -1,6 +1,12 @@
 0,delete
--1,\floorTiles\Unused\Building Wall Vertical.png
+-1,\floorTiles\Unused\Chapel Corner 1.png
 1,\floorTiles\Unused\Chapel Floor.png
--2,\floorTiles\Unused\Building Wall Corner.png
+-2,\floorTiles\Unused\Chapel Corner 2.png
 2,\floorTiles\Unused\image (9).png
+-3,\floorTiles\Unused\Chapel Corner 3.png
 3,\floorTiles\2.png
+-4,\floorTiles\Unused\Chapel Corner 4.png
+-5,\floorTiles\Unused\Chapel Wall Horizontal.png
+4,\floorTiles\wooden_floor.png
+-6,\floorTiles\Unused\Chapel Wall Vertical.png
+-7,\floorTiles\Unused\Chapel Door.png

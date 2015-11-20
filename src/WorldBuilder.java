@@ -18,50 +18,46 @@ public abstract class WorldBuilder {
 	private static double limit(double x){
 		return -1/(x + 1) + 1;
 	}
-	private static void makeRiver(Point origin, double[][] elevation){
+	private static ArrayList<Point> makeRiver(Point origin, double[][] elevation){
 		Point active = origin;
+		ArrayList<Point> river = new ArrayList<Point>();
+		boolean[][] isRiver = new boolean[elevation.length][elevation[0].length];
+		for (int y = 0; y < isRiver.length; y++) {
+			for (int x = 0; x < isRiver[0].length; x++) {
+				isRiver[y][x] = false;
+			}
+		}
 		
 		int itt = 0;
 		while(itt < 500){
 			itt++;
+			river.add(active);
 			int x = active.x;
 			int y = active.y;
 			Point[] neighbors = {new Point(y-1, x),
 								 new Point(y, x+1),
 								 new Point(y+1, x),
-								 new Point(y, x-1),
-								 
-								 //new Point(y-2, x),
-								 //new Point(y, x+2),
-								 //new Point(y+2, x),
-								 //new Point(y, x-2),
-								 
-								 //new Point(y-3, x),
-								 //new Point(y, x+3),
-								 //new Point(y+3, x),
-								 //new Point(y, x-3)
-								 };
+								 new Point(y, x-1)};
 			
 			double min = 2;
 			active = null;
 			for(Point p : neighbors){
 				double pVal = elevation[p.y][p.x];
-				if(pVal == -1)
+				if(pVal < getSeaLevel())
+					return river;
+				if(isRiver[p.y][p.x])
 					continue;
-				if(pVal < levels[0])
-					return;
 				else if(pVal < min){
 					min = pVal;
 					active = p;
 				}
 			}
-			
 			world[y][x] = -1;
 			
 			if(active == null)
-				return;
+				return river;
 		}
-		
+		return null;
 	}
 	
 	private static void fillRivers(double[][] elevation){
@@ -225,6 +221,8 @@ public abstract class WorldBuilder {
 	    int rivers = 0;
 	    while(rivers < 4){
 	    	rivers++;
+	    	
+	    	/*
 	    	ArrayList<Node> river1 = null;
 	    	do{
 		    	Point startpoint = new Point((int) (WORLD_WIDTH/2f + (Math.random() - 0.5)*50), 
@@ -253,7 +251,7 @@ public abstract class WorldBuilder {
 	    	
 		    for(Point p : river1){
 		    	elevation[p.y][p.x] = 0;
-		    }
+		    }*/
 	    }
 	    
 	    
@@ -275,6 +273,8 @@ public abstract class WorldBuilder {
 	        }
 	    }
 
+	    makeRiver(new Point(500,500), elevation);
+	    
 	    //makeRiver(new Point((int) (Math.random()*WORLD_WIDTH), (int) (Math.random()*WORLD_HEIGHT)), elevation);
 	    
 //	    fillRivers(elevation);

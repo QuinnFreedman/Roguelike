@@ -81,7 +81,7 @@ public class Roguelike{
 		Main.generator = new Random(s);
 		Console.log("seed = "+s);
 		
-		//WorldBuilder.buildWorld();
+		WorldBuilder.buildWorld();
 		
 		level = new Level(30,20);
 		Main.debug = new Debug(level);
